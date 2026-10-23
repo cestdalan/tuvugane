@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { SERVICES } from '../data/portfolioData';
 import { ArrowUpRight, Check } from 'lucide-react';
 
@@ -10,10 +11,16 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
   const [activeServiceId, setActiveServiceId] = useState<string>(SERVICES[0].id);
 
   return (
-    <section id="what-we-do" className="relative w-full py-28 md:py-36 bg-[#080808] text-white border-t border-white/10">
+    <section id="what-we-do" className="relative w-full py-28 md:py-36 bg-[#080808] text-white border-t border-white/10 overflow-hidden">
       <div className="w-full px-6 md:px-12 lg:px-16 space-y-16">
-        {/* Section Header: Full Width */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10">
+        {/* Section Header: Full Width with scroll flow animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10"
+        >
           <div className="space-y-3">
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight text-white">
               What We Do
@@ -22,15 +29,19 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
           <p className="max-w-md text-sm sm:text-base text-white/60 font-light leading-relaxed">
             From remote wilderness expeditions in the Great Lakes region to high-concept kinetic 3D commercial campaigns, we orchestrate the entire creative continuum.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Services List: Full-Width Row Items */}
+        {/* Services List: Full-Width Row Items with scroll flow animation */}
         <div className="divide-y divide-white/10">
-          {SERVICES.map((service) => {
+          {SERVICES.map((service, idx) => {
             const isExpanded = activeServiceId === service.id;
             return (
-              <div
+              <motion.div
                 key={service.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.7, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 onMouseEnter={() => setActiveServiceId(service.id)}
                 className={`group py-10 md:py-14 transition-all duration-300 ${
                   isExpanded ? 'bg-white/[0.02]' : ''
@@ -64,23 +75,13 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
                         Core Deliverables
                       </span>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-white/80">
-                        {service.deliverables.map((item, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
+                        {service.deliverables.map((item, dIdx) => (
+                          <li key={dIdx} className="flex items-center gap-2">
                             <Check className="w-3.5 h-3.5 text-white shrink-0" />
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
-
-                    {/* Hardware & Software Tools */}
-                    <div className="pt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/40 font-mono">
-                      <span>Toolkit:</span>
-                      {service.tools.map((tool, idx) => (
-                        <span key={idx} className="text-white/60">
-                          {tool}{idx < service.tools.length - 1 ? ' ·' : ''}
-                        </span>
-                      ))}
                     </div>
                   </div>
 
@@ -97,7 +98,7 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

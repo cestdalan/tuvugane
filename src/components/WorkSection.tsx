@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { Project } from '../types';
 import { ArrowUpRight, Play } from 'lucide-react';
 
@@ -18,10 +19,16 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
       : projects.filter((p) => p.category === activeFilter);
 
   return (
-    <section id="work" className="relative w-full py-28 md:py-36 bg-[#050505] text-white border-t border-white/10">
+    <section id="work" className="relative w-full py-28 md:py-36 bg-[#050505] text-white border-t border-white/10 overflow-hidden">
       <div className="w-full px-6 md:px-12 lg:px-16 space-y-12">
-        {/* Section Header: Full Screen Width */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-white/10">
+        {/* Section Header: Full Screen Width with scroll flow animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-white/10"
+        >
           <div className="space-y-3">
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight text-white">
               Featured Work
@@ -48,15 +55,19 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Bento Grid: Full Screen Width Presence */}
+        {/* Bento Grid: Cards flow in smoothly on scroll */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 pt-4">
           {filteredProjects.map((project, idx) => {
             const isWide = idx === 0 || idx === 3;
             return (
-              <div
+              <motion.div
                 key={project.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.75, delay: (idx % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => onSelectProject(project)}
                 data-cursor="VIEW"
                 className={`group cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl bg-[#0c0c0c] border border-white/10 hover:border-white/30 transition-all duration-500 ${
@@ -113,7 +124,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
                     <span className="text-white/70">{project.role}</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Play, Volume2, VolumeX, ArrowDown, ArrowUpRight } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -56,25 +57,60 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
       {/* Spacer for Top Header */}
       <div className="h-24 md:h-32" />
 
-      {/* 2. Main Editorial Hero Copy: Full-Width Layout without boxed margins */}
+      {/* 2. Main Editorial Hero Copy: Words flowing in gracefully */}
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 my-auto py-12 md:py-20">
-        <div className="max-w-4xl space-y-6">
-          {/* Ultra-Bold Editorial Headline */}
-          <h1 className="font-display font-extrabold text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.93] text-white">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+            },
+          }}
+          className="max-w-4xl space-y-6"
+        >
+          {/* Ultra-Bold Editorial Headline flowing in */}
+          <motion.h1
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+            }}
+            className="font-display font-extrabold text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.93] text-white"
+          >
             We tell stories.
-          </h1>
+          </motion.h1>
 
           {/* Editorial Subtitle */}
-          <p className="font-display font-medium text-lg sm:text-2xl text-white/80 tracking-wide">
+          <motion.p
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+            }}
+            className="font-display font-medium text-lg sm:text-2xl text-white/80 tracking-wide"
+          >
             Film <span className="text-white/30">·</span> Commercials <span className="text-white/30">·</span> Motion Design
-          </p>
+          </motion.p>
 
-          <p className="max-w-xl text-sm sm:text-base text-white/60 leading-relaxed font-sans font-light">
+          <motion.p
+            variants={{
+              hidden: { opacity: 0, y: 25 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+            }}
+            className="max-w-xl text-sm sm:text-base text-white/60 leading-relaxed font-sans font-light"
+          >
             An elite creative film and motion design studio headquartered in Kigali. Rooted in authentic human truth, crafted with large-format cinema glass and avant-garde kinetic direction.
-          </p>
+          </motion.p>
 
           {/* Dual Action Buttons */}
-          <div className="pt-4 flex flex-wrap items-center gap-4">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+            }}
+            className="pt-4 flex flex-wrap items-center gap-4"
+          >
             <button
               type="button"
               onClick={() => onNavigate('work')}
@@ -94,8 +130,8 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
               <span>Get In Touch</span>
               <ArrowUpRight className="w-4 h-4 text-white/70" />
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* 3. Hero Bottom Control Bar: Full-Width */}

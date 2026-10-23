@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
 import { ArchiveStill } from '../types';
 import { X, Camera, MapPin, Maximize2, ArrowLeft, ArrowRight, Film, Sliders } from 'lucide-react';
@@ -65,10 +66,16 @@ export default function ArchiveSection() {
   }, [selectedStill, currentIndex]);
 
   return (
-    <section id="archive" className="relative w-full py-28 md:py-36 bg-[#080808] text-white border-t border-white/10">
+    <section id="archive" className="relative w-full py-28 md:py-36 bg-[#080808] text-white border-t border-white/10 overflow-hidden">
       <div className="w-full px-6 md:px-12 lg:px-16 space-y-16">
-        {/* Section Header: Full Screen Width */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10">
+        {/* Section Header: Full Screen Width with scroll flow animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10"
+        >
           <div className="space-y-3">
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight text-white">
               Stills of Today
@@ -77,13 +84,17 @@ export default function ArchiveSection() {
           <p className="max-w-md text-sm sm:text-base text-white/60 font-light leading-relaxed">
             Raw frames, optical experiments, and behind-the-lens documentation captured across Rwanda's landscapes and international film sets.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Stills Grid: Full Screen Width */}
+        {/* Stills Grid: Cards flowing in smoothly on scroll */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ARCHIVE_STILLS.map((still) => (
-            <div
+          {ARCHIVE_STILLS.map((still, idx) => (
+            <motion.div
               key={still.id}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: (idx % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => openLightbox(still)}
               data-cursor="EXPAND"
               className="group cursor-pointer flex flex-col rounded-xl overflow-hidden bg-[#0e0e0e] border border-white/10 hover:border-white/30 transition-all duration-300"
@@ -135,7 +146,7 @@ export default function ArchiveSection() {
                 </div>
                 <span className="shrink-0 text-white/60 ml-2">{still.exif}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

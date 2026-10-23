@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
 
 interface AboutSectionProps {
@@ -31,10 +32,16 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
   ];
 
   return (
-    <section id="about" className="relative w-full py-28 md:py-36 bg-[#050505] text-white border-t border-white/10">
+    <section id="about" className="relative w-full py-28 md:py-36 bg-[#050505] text-white border-t border-white/10 overflow-hidden">
       <div className="w-full px-6 md:px-12 lg:px-16 space-y-24">
-        {/* Section Header & Manifesto Intro: Full Screen Width */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* Section Header & Manifesto Intro: Words flow in smoothly on scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start"
+        >
           <div className="lg:col-span-5 space-y-4">
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight leading-[1.02] text-white">
               We capture what cannot be fabricated.
@@ -62,23 +69,36 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* 3 Pillars Grid: Full Screen Width */}
+        {/* 3 Pillars Grid: Cards flow in on scroll */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-white/10">
-          {pillars.map((pillar) => (
-            <div key={pillar.num} className="space-y-4 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:border-white/20 transition-all">
+          {pillars.map((pillar, idx) => (
+            <motion.div
+              key={pillar.num}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-4 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:border-white/20 transition-all"
+            >
               <span className="font-mono text-sm text-white/40 block">{pillar.num}</span>
               <h3 className="font-display font-bold text-xl sm:text-2xl text-white">{pillar.title}</h3>
               <p className="text-sm text-white/60 font-light leading-relaxed">
                 {pillar.text}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* Studio Stats Strip: Full Screen Width */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10">
+        {/* Studio Stats Strip: Flows in on scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10"
+        >
           {studioStats.map((stat, idx) => (
             <div key={idx} className="space-y-1">
               <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
@@ -89,7 +109,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
               </span>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

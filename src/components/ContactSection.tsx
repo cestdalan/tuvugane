@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { METHODOLOGY_STEPS, FAQS } from '../data/portfolioData';
 import { InquiryFormData } from '../types';
 import {
@@ -128,11 +129,17 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
   };
 
   return (
-    <section className="relative w-full bg-[#070707] text-white border-t border-white/10">
+    <section className="relative w-full bg-[#070707] text-white border-t border-white/10 overflow-hidden">
       <div className="w-full px-6 md:px-12 lg:px-16 py-24 md:py-36 space-y-32">
         {/* 1. Direct Contact Area (#contact): Full Width with embedded Live Kigali Clock */}
         <div id="contact" className="scroll-mt-28 space-y-12">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-70px" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4"
+          >
             <div className="max-w-4xl space-y-4">
               <div className="flex items-center gap-2 text-xs font-mono text-white/80">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -150,12 +157,18 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
                 We collaborate with global brands, documentary foundations, festival programmers, and visionary creators. Reach our executive production desk directly.
               </p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Contact Methods Cards: Pure White Highlights */}
+          {/* Contact Methods Cards: Flow in on scroll */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             {/* Direct Email Card */}
-            <div className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: 0, ease: [0.16, 1, 0.3, 1] }}
+              className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all"
+            >
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
                   <Mail className="w-5 h-5" />
@@ -182,10 +195,16 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
                 </button>
                 <ArrowUpRight className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
               </div>
-            </div>
+            </motion.div>
 
-            {/* Quick WhatsApp Chat (White styling, no green) */}
-            <div className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all">
+            {/* Quick WhatsApp Chat */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all"
+            >
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
                   <MessageSquare className="w-5 h-5" />
@@ -210,10 +229,16 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
                 <span>Launch WhatsApp Chat</span>
                 <ArrowUpRight className="w-4 h-4" />
               </a>
-            </div>
+            </motion.div>
 
             {/* Jump to Project Inquiry */}
-            <div className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="p-8 md:p-10 rounded-2xl bg-[#0c0c0c] border border-white/10 flex flex-col justify-between space-y-8 group hover:border-white/30 transition-all"
+            >
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
                   <Send className="w-5 h-5" />
@@ -235,12 +260,19 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
                 <span>Inquire for a Project ↓</span>
                 <ArrowDown className="w-4 h-4" />
               </a>
-            </div>
+            </motion.div>
           </div>
         </div>
 
-        {/* 2. Project Commission Form (#inquire): Full-Width Container */}
-        <div id="inquire" className="scroll-mt-28 p-8 md:p-16 rounded-3xl bg-[#0a0a0a] border border-white/15 shadow-2xl space-y-10">
+        {/* 2. Project Commission Form (#inquire): Full-Width Container with scroll flow */}
+        <motion.div
+          id="inquire"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="scroll-mt-28 p-8 md:p-16 rounded-3xl bg-[#0a0a0a] border border-white/15 shadow-2xl space-y-10"
+        >
           <div className="max-w-3xl space-y-3">
             <h3 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-6xl text-white">
               Tell us about your story.
@@ -444,20 +476,30 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
               </div>
             </form>
           )}
-        </div>
+        </motion.div>
 
         {/* 3. Methodology Breakdown: Full Width */}
         <div className="space-y-12">
-          <div className="space-y-3">
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-70px" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-3"
+          >
             <h3 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white">
               Production Methodology
             </h3>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {METHODOLOGY_STEPS.map((step) => (
-              <div
+            {METHODOLOGY_STEPS.map((step, idx) => (
+              <motion.div
                 key={step.step}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.7, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 className="p-8 rounded-2xl bg-[#0a0a0a] border border-white/10 space-y-4 hover:border-white/20 transition-colors"
               >
                 <div className="flex items-center justify-between">
@@ -474,7 +516,7 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
                 <p className="text-xs text-white/60 font-light leading-relaxed">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
