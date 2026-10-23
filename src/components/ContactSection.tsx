@@ -134,17 +134,13 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
         <div id="contact" className="scroll-mt-28 space-y-12">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4">
             <div className="max-w-4xl space-y-4">
-              <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-white/50">
-                <span>Direct Contact Desk</span>
-                <span>·</span>
-                <div className="flex items-center gap-2 text-white/80">
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  <span>Kigali Time:</span>
-                  <span className="font-semibold text-white tabular-nums">
-                    {kigaliTime || '19:00:00 CAT'}
-                  </span>
-                  <span className="text-white/40">(UTC+2)</span>
-                </div>
+              <div className="flex items-center gap-2 text-xs font-mono text-white/80">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span>Kigali Time:</span>
+                <span className="font-semibold text-white tabular-nums">
+                  {kigaliTime || '19:00:00 CAT'}
+                </span>
+                <span className="text-white/40">(UTC+2)</span>
               </div>
 
               <h2 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-8xl tracking-tight leading-[0.95] text-white">
@@ -246,9 +242,6 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
         {/* 2. Project Commission Form (#inquire): Full-Width Container */}
         <div id="inquire" className="scroll-mt-28 p-8 md:p-16 rounded-3xl bg-[#0a0a0a] border border-white/15 shadow-2xl space-y-10">
           <div className="max-w-3xl space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-white/50">
-              Project Commission
-            </span>
             <h3 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-6xl text-white">
               Tell us about your story.
             </h3>
@@ -456,9 +449,6 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
         {/* 3. Methodology Breakdown: Full Width */}
         <div className="space-y-12">
           <div className="space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-white/50">
-              Our Process
-            </span>
             <h3 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white">
               Production Methodology
             </h3>
@@ -493,9 +483,6 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-white/10">
           <div className="lg:col-span-5 space-y-8">
             <div className="space-y-4">
-              <span className="text-xs font-mono uppercase tracking-widest text-white/50">
-                Headquarters
-              </span>
               <h3 className="font-display font-bold text-2xl sm:text-3xl text-white">
                 Tuvugane Studio Kacyiru
               </h3>
@@ -558,9 +545,6 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
 
           <div className="lg:col-span-7 space-y-6">
             <div className="space-y-2">
-              <span className="text-xs font-mono uppercase tracking-widest text-white/50">
-                Frequently Addressed
-              </span>
               <h3 className="font-display font-bold text-2xl sm:text-3xl text-white">
                 Studio FAQ Matrix
               </h3>

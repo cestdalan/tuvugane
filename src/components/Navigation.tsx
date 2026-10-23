@@ -27,21 +27,17 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
 
   const navLinks = [
     { id: 'hero', label: 'Home' },
-    { id: 'what-we-do', label: 'Services' },
     { id: 'work', label: 'Work' },
-    { id: 'archive', label: 'Archive' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' },
   ];
 
   const mobileDrawerLinks = [
     { num: '01', id: 'hero', label: 'Home' },
-    { num: '02', id: 'what-we-do', label: 'Services' },
-    { num: '03', id: 'work', label: 'Featured Work' },
-    { num: '04', id: 'archive', label: 'Visual Archive' },
-    { num: '05', id: 'about', label: 'About Studio' },
-    { num: '06', id: 'contact', label: 'Contact Desk' },
-    { num: '07', id: 'inquire', label: 'Commission Brief' },
+    { num: '02', id: 'work', label: 'Featured Work' },
+    { num: '03', id: 'about', label: 'About Studio' },
+    { num: '04', id: 'contact', label: 'Contact Desk' },
+    { num: '05', id: 'inquire', label: 'Commission Brief' },
   ];
 
   return (
@@ -190,7 +186,6 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
         >
           {[
             { id: 'hero', icon: Home, label: 'Home' },
-            { id: 'what-we-do', icon: Layers, label: 'Services' },
             { id: 'work', icon: Film, label: 'Work' },
             { id: 'about', icon: Compass, label: 'About' },
             { id: 'contact', icon: Mail, label: 'Contact' },

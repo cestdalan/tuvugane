@@ -59,15 +59,6 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
       {/* 2. Main Editorial Hero Copy: Full-Width Layout without boxed margins */}
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 my-auto py-12 md:py-20">
         <div className="max-w-4xl space-y-6">
-          {/* Studio Monogram / Location Meta */}
-          <div className="flex items-center gap-3 text-xs tracking-widest uppercase font-mono text-white/70">
-            <span>Kigali, Rwanda</span>
-            <span aria-hidden="true" className="text-white/30">·</span>
-            <span>Est. 2020</span>
-            <span aria-hidden="true" className="text-white/30">·</span>
-            <span className="text-white font-medium">Pan-African &amp; Global</span>
-          </div>
-
           {/* Ultra-Bold Editorial Headline */}
           <h1 className="font-display font-extrabold text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.93] text-white">
             We tell stories.
@@ -142,7 +133,7 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
           {/* Animated vertical scroll indicator */}
           <button
             type="button"
-            onClick={() => onNavigate('what-we-do')}
+            onClick={() => onNavigate('work')}
             data-cursor="SCROLL"
             className="hidden sm:flex flex-col items-center gap-1.5 text-[11px] font-mono tracking-widest text-white/50 hover:text-white transition-colors"
           >

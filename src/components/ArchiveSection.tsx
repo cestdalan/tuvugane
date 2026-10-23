@@ -40,9 +40,6 @@ export default function ArchiveSection() {
         {/* Section Header: Full Screen Width */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10">
           <div className="space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-white/50">
-              Visual Archive · Cinematography &amp; BTS
-            </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight text-white">
               Stills from the Field
             </h2>
