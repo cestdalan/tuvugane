@@ -8,10 +8,27 @@ interface NavigationProps {
 
 export default function Navigation({ activeSection, onNavigate }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 30);
+
+      // Always show when near the top of the page
+      if (currentScrollY <= 30) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY + 6 && currentScrollY > 70) {
+        // Scrolling down past threshold -> hide mobile navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY - 6) {
+        // Scrolling up -> reveal mobile navbar
+        setIsVisible(true);
+      }
+
+      lastScrollY = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -34,10 +51,14 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
     <>
       {/* Desktop & Mobile Navbar: Full screen width with nav links grouped close to Inquire button */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 w-full ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out w-full ${
           isScrolled
             ? 'bg-[#050505]/90 backdrop-blur-xl border-b border-white/10 py-4 shadow-2xl'
             : 'bg-gradient-to-b from-black/80 via-black/30 to-transparent py-6'
+        } ${
+          isVisible
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-full opacity-0 pointer-events-none md:translate-y-0 md:opacity-100 md:pointer-events-auto'
         }`}
       >
         <div className="w-full px-6 md:px-12 lg:px-16 flex items-center justify-between">
