@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Project } from '../types';
-import { X, ArrowLeft, ArrowRight, Play, Check, UserCheck } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -48,21 +48,32 @@ export default function ProjectModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl overflow-y-auto p-4 md:p-8 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl overflow-y-auto p-2 sm:p-4 md:p-8 animate-in fade-in duration-300">
+      {/* Floating High-Visibility Mobile Close Button */}
+      <button
+        type="button"
+        onClick={onClose}
+        className="fixed top-4 right-4 z-50 sm:hidden flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-black font-semibold text-xs shadow-[0_6px_25px_rgba(0,0,0,0.85)] border border-white active:scale-95 transition-transform"
+        aria-label="Close project view"
+      >
+        <X className="w-4 h-4 stroke-[2.5]" />
+        <span>Close</span>
+      </button>
+
       <div className="relative w-full max-w-6xl my-auto bg-[#0a0a0a] border border-white/15 rounded-2xl overflow-hidden shadow-[0_20px_70px_rgba(0,0,0,0.9)] flex flex-col">
         {/* Modal Top Control Bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10">
-          <div className="flex items-center gap-3">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 py-4 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10">
+          <div className="flex items-center gap-3 pr-2">
             <span className="text-xs font-mono text-white/50 uppercase tracking-wider">
               {project.category}
             </span>
             <span className="text-white/20">/</span>
-            <span className="font-display font-bold text-sm sm:text-base tracking-wide text-white truncate max-w-xs md:max-w-md">
+            <span className="font-display font-bold text-sm sm:text-base tracking-wide text-white truncate max-w-[150px] sm:max-w-xs md:max-w-md">
               {project.title}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Quick Next / Prev pagination */}
             <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5 border border-white/10">
               <button
@@ -73,7 +84,7 @@ export default function ProjectModal({
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
-              <span className="px-2 font-mono text-xs text-white/40 tabular-nums">
+              <span className="px-1.5 sm:px-2 font-mono text-xs text-white/40 tabular-nums">
                 {currentIndex + 1} / {projects.length}
               </span>
               <button
@@ -90,16 +101,17 @@ export default function ProjectModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-all flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider"
               aria-label="Close project modal"
             >
-              <X className="w-5 h-5" />
+              <span className="hidden sm:inline">Close</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Modal Content Scrollable Area */}
-        <div className="p-6 md:p-10 space-y-12 overflow-y-auto max-h-[82vh]">
+        <div className="p-4 sm:p-6 md:p-10 space-y-10 sm:space-y-12 overflow-y-auto max-h-[82vh]">
           {/* Main Visual Stage */}
           <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-white/10 group">
             {project.videoUrl ? (
@@ -123,19 +135,15 @@ export default function ProjectModal({
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
 
-            {/* Bottom Title Overlay */}
+            {/* Bottom Title Overlay (Duration removed) */}
             <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between pointer-events-none">
               <div>
                 <p className="text-xs font-mono uppercase tracking-widest text-white/70">
                   {project.client} · {project.year}
                 </p>
-                <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-white">
+                <h2 className="font-display font-extrabold text-2xl sm:text-4xl text-white">
                   {project.title}
                 </h2>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 text-xs font-mono text-white/80">
-                <Play className="w-3 h-3 fill-current text-white" />
-                <span>{project.videoDuration}</span>
               </div>
             </div>
           </div>
@@ -196,22 +204,6 @@ export default function ProjectModal({
                   ))}
                 </ul>
               </div>
-
-              {/* Credits */}
-              <div className="space-y-3 p-6 bg-white/[0.02] border border-white/10 rounded-xl">
-                <h4 className="text-xs font-mono uppercase tracking-widest text-white/70 flex items-center gap-2">
-                  <UserCheck className="w-3.5 h-3.5 text-white" />
-                  <span>Production Credits</span>
-                </h4>
-                <div className="divide-y divide-white/5 text-xs">
-                  {project.credits.map((credit, idx) => (
-                    <div key={idx} className="py-2 flex items-center justify-between">
-                      <span className="text-white/50">{credit.role}</span>
-                      <span className="text-white font-medium">{credit.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -245,8 +237,8 @@ export default function ProjectModal({
             </div>
           </div>
 
-          {/* Bottom Next/Prev */}
-          <div className="pt-6 border-t border-white/10 flex items-center justify-between">
+          {/* Bottom Next/Prev and Close Actions */}
+          <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
             <button
               type="button"
               onClick={navigatePrev}
@@ -255,6 +247,15 @@ export default function ProjectModal({
               <ArrowLeft className="w-4 h-4" />
               <span>Previous Project</span>
             </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-full bg-white text-black font-semibold text-xs tracking-wider uppercase hover:bg-white/90 active:scale-95 transition-all shadow-md"
+            >
+              Close Project
+            </button>
+
             <button
               type="button"
               onClick={navigateNext}

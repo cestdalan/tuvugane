@@ -22,27 +22,6 @@ interface ContactSectionProps {
 }
 
 export default function ContactSection({ preselectedService }: ContactSectionProps) {
-  // Live Kigali Time Clock (CAT / UTC+2)
-  const [kigaliTime, setKigaliTime] = useState<string>('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: 'Africa/Kigali',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      };
-      setKigaliTime(now.toLocaleTimeString('en-GB', options));
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   const [copiedEmail, setCopiedEmail] = useState(false);
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('hello@tuvugane.com');
@@ -130,9 +109,9 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
 
   return (
     <section className="relative w-full bg-[#070707] text-white border-t border-white/10 overflow-hidden">
-      <div className="w-full px-6 md:px-12 lg:px-16 py-24 md:py-36 space-y-32">
-        {/* 1. Direct Contact Area (#contact): Full Width with embedded Live Kigali Clock */}
-        <div id="contact" className="scroll-mt-28 space-y-12">
+      <div className="w-full px-6 md:px-12 lg:px-16 py-20 md:py-36 space-y-24 md:space-y-32">
+        {/* 1. Direct Contact Area (#contact): Full Width */}
+        <div id="contact" className="scroll-mt-28 space-y-10 md:space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -141,19 +120,10 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
             className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4"
           >
             <div className="max-w-4xl space-y-4">
-              <div className="flex items-center gap-2 text-xs font-mono text-white/80">
-                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                <span>Kigali Time:</span>
-                <span className="font-semibold text-white tabular-nums">
-                  {kigaliTime || '19:00:00 CAT'}
-                </span>
-                <span className="text-white/40">(UTC+2)</span>
-              </div>
-
-              <h2 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-8xl tracking-tight leading-[0.95] text-white">
+              <h2 className="font-display font-extrabold text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight leading-[1.08] text-white break-words">
                 Let's make something true.
               </h2>
-              <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed max-w-2xl pt-2">
+              <p className="text-sm sm:text-base md:text-lg text-white/60 font-light leading-relaxed max-w-2xl pt-2">
                 We collaborate with global brands, documentary foundations, festival programmers, and visionary creators. Reach our executive production desk directly.
               </p>
             </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Project } from '../types';
-import { ArrowUpRight, Play } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface WorkSectionProps {
   projects: Project[];
@@ -87,14 +87,10 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/30 to-transparent opacity-85 group-hover:opacity-65 transition-opacity" />
                   <div className="absolute inset-0 film-grain pointer-events-none" />
 
-                  {/* Category Pill / Duration badge */}
+                  {/* Category Pill */}
                   <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
                     <span className="text-[11px] font-mono tracking-wider uppercase text-white/70 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
                       {project.category}
-                    </span>
-                    <span className="text-[11px] font-mono text-white/70 bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
-                      <Play className="w-2.5 h-2.5 fill-current" />
-                      {project.videoDuration}
                     </span>
                   </div>
 
@@ -118,11 +114,6 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
                   <p className="text-xs sm:text-sm text-white/60 line-clamp-2 font-light leading-relaxed">
                     {project.summary}
                   </p>
-
-                  <div className="pt-2 flex items-center gap-2 text-xs font-mono text-white/40">
-                    <span>Role:</span>
-                    <span className="text-white/70">{project.role}</span>
-                  </div>
                 </div>
               </motion.div>
             );

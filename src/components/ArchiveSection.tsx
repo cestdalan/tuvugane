@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
 import { ArchiveStill } from '../types';
-import { X, Camera, MapPin, Maximize2, ArrowLeft, ArrowRight, Film, Sliders } from 'lucide-react';
+import { X, Maximize2, ArrowLeft, ArrowRight, Film } from 'lucide-react';
 
 export default function ArchiveSection() {
   const [selectedStill, setSelectedStill] = useState<ArchiveStill | null>(null);
@@ -111,13 +111,9 @@ export default function ArchiveSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
                 <div className="absolute inset-0 film-grain pointer-events-none" />
 
-                {/* Top Location Pill */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-xs font-mono text-white/80">
-                  <span className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
-                    <MapPin className="w-3 h-3 text-white" />
-                    <span className="truncate max-w-[160px]">{still.location}</span>
-                  </span>
-                  <span className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+                {/* Top Year Pill (Location removed) */}
+                <div className="absolute top-4 right-4 text-xs font-mono text-white/80">
+                  <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
                     {still.year}
                   </span>
                 </div>
@@ -136,15 +132,6 @@ export default function ArchiveSection() {
                     <Maximize2 className="w-3.5 h-3.5" />
                   </div>
                 </div>
-              </div>
-
-              {/* Technical EXIF Strip */}
-              <div className="px-5 py-3 bg-[#0a0a0a] border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-white/40">
-                <div className="flex items-center gap-2 truncate">
-                  <Camera className="w-3 h-3 shrink-0 text-white/30" />
-                  <span className="truncate">{still.camera} · {still.lens}</span>
-                </div>
-                <span className="shrink-0 text-white/60 ml-2">{still.exif}</span>
               </div>
             </motion.div>
           ))}
@@ -225,14 +212,12 @@ export default function ArchiveSection() {
                 <div className="absolute inset-0 film-grain pointer-events-none" />
               </div>
 
-              {/* Sub-strip on image: location & year */}
+              {/* Sub-strip on image: project & year */}
               <div className="p-4 bg-[#0a0a0a] border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-white/60">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white">{selectedStill.location}</span>
-                </div>
                 <div className="flex items-center gap-4">
                   <span className="text-white/40">PROJECT: <strong className="text-white font-normal">{selectedStill.project}</strong></span>
+                </div>
+                <div className="flex items-center gap-4">
                   <span className="text-white/40">YEAR: <strong className="text-white font-normal">{selectedStill.year}</strong></span>
                 </div>
               </div>
@@ -273,33 +258,6 @@ export default function ArchiveSection() {
               </div>
             </div>
 
-            {/* 3. Technical EXIF & Camera Rig Strip */}
-            <div className="p-6 md:p-8 rounded-2xl bg-[#0c0c0c] border border-white/10 space-y-4">
-              <div className="flex items-center gap-2 text-xs font-mono text-white/40 uppercase tracking-wider">
-                <Sliders className="w-3.5 h-3.5 text-white" />
-                <span>Optical &amp; Sensor Specifications</span>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs font-mono">
-                <div className="space-y-1">
-                  <span className="text-white/40 block">CAMERA SYSTEM</span>
-                  <span className="text-white font-medium text-sm">{selectedStill.camera}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-white/40 block">OPTICS &amp; LENS</span>
-                  <span className="text-white font-medium text-sm">{selectedStill.lens}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-white/40 block">EXPOSURE &amp; SHUTTER</span>
-                  <span className="text-white font-medium text-sm">{selectedStill.exif}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-white/40 block">LOCATION</span>
-                  <span className="text-white font-medium text-sm truncate block">{selectedStill.location}</span>
-                </div>
-              </div>
-            </div>
-
             {/* 4. Bottom Link To The Next Still Card (In Full View) */}
             <div className="pt-12 pb-16 border-t border-white/10 space-y-4">
               <div className="flex items-center justify-between">
@@ -336,10 +294,6 @@ export default function ArchiveSection() {
                     <h4 className="font-display font-bold text-xl md:text-2xl lg:text-3xl text-white group-hover:text-white/90 transition-colors">
                       {nextStill.title}
                     </h4>
-                    <p className="text-xs font-mono text-white/40 flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3 text-white/30" />
-                      <span>{nextStill.location}</span>
-                    </p>
                   </div>
                 </div>
 
