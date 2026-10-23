@@ -17,14 +17,15 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
       const currentScrollY = window.scrollY;
       setIsScrolled(currentScrollY > 30);
 
-      // Always show when near the top of the page
-      if (currentScrollY <= 30) {
+      // Always show when near the top or reached the bottom of the page
+      const isAtBottom = window.innerHeight + currentScrollY >= document.documentElement.scrollHeight - 40;
+      if (currentScrollY <= 30 || isAtBottom) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY + 6 && currentScrollY > 70) {
-        // Scrolling down past threshold -> hide mobile navbar
+        // Scrolling down past threshold -> hide mobile navbars
         setIsVisible(false);
       } else if (currentScrollY < lastScrollY - 6) {
-        // Scrolling up -> reveal mobile navbar
+        // Scrolling up -> reveal mobile navbars
         setIsVisible(true);
       }
 
@@ -123,10 +124,18 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
         </div>
       </header>
 
-      {/* Mobile Dynamic Island Dock */}
-      <div className="md:hidden fixed bottom-[max(1.2rem,env(safe-area-inset-bottom))] left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
+      {/* Mobile Dynamic Island Dock: Hides on scroll down, reveals on scroll up */}
+      <div
+        className={`md:hidden fixed bottom-[max(1.2rem,env(safe-area-inset-bottom))] left-0 right-0 z-40 flex justify-center pointer-events-none px-4 transition-all duration-300 ease-in-out ${
+          isVisible
+            ? 'translate-y-0 opacity-100'
+            : 'translate-y-24 opacity-0'
+        }`}
+      >
         <nav
-          className="pointer-events-auto flex items-center gap-1 p-1.5 bg-[#0e0e0e]/90 backdrop-blur-2xl border border-white/15 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.8)]"
+          className={`pointer-events-auto flex items-center gap-1 p-1.5 bg-[#0e0e0e]/90 backdrop-blur-2xl border border-white/15 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.8)] transition-all duration-300 ${
+            !isVisible ? 'pointer-events-none' : ''
+          }`}
           aria-label="Mobile quick dock"
         >
           {[
