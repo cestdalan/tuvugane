@@ -58,6 +58,8 @@ export interface ArchiveStill {
   aspectRatio: 'landscape' | 'portrait' | 'square';
   gradient: string;
   imageUrl: string;
+  description: string;
+  backstory?: string;
 }
 
 export interface FaqItem {

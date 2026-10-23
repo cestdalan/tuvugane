@@ -384,7 +384,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2024',
     aspectRatio: 'portrait',
     gradient: 'from-amber-950 via-stone-900 to-black',
-    imageUrl: '/assets/aistudio/iMpakanizi_66_b411b2d2.jpg'
+    imageUrl: '/assets/aistudio/iMpakanizi_66_b411b2d2.jpg',
+    description: 'Captured on location at the ancient Royal Palace in Nyanza during the magic hour preceding dusk. The dancer stood motionless as the wind cut through the banana leaves, backlit by a dying golden sun. Shot wide on Atlas Orion Anamorphic 65mm glass with an amber flare streak, this frame embodies the ancestral strength and sacred posture of traditional Rwandan choreography, celebrating ritual without embellishment.',
+    backstory: 'To capture this specific frame, our cinematography unit spent three hours calibrating natural backlighting through the heritage courtyard trees. We wanted zero artificial fill—only the optical glow of the setting Rwandan sun reflecting off the ceremonial crown.'
   },
   {
     id: 'a2',
@@ -397,7 +399,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2024',
     aspectRatio: 'landscape',
     gradient: 'from-zinc-900 via-neutral-900 to-black',
-    imageUrl: '/assets/aistudio/dukunde_kawa_17_9888532a.jpg'
+    imageUrl: '/assets/aistudio/dukunde_kawa_17_9888532a.jpg',
+    description: 'High above Musasa along the steep ridges of Gakenke District, coffee farmers navigate terraced volcanic hillsides enveloped in cool morning vapor. Using a dedicated monochrome sensor and high-contrast glass, this frame documents the rugged vertical topography where Rwanda’s finest bourbon Arabica is cultivated by community cooperatives.',
+    backstory: 'The mist lifted for barely seven minutes. Standing on a 45-degree slope with our local cooperative guide, we waited until the lead harvester walked across the contour line to give scale to the thousand hills descending beneath them.'
   },
   {
     id: 'a3',
@@ -410,7 +414,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2024',
     aspectRatio: 'landscape',
     gradient: 'from-zinc-950 via-neutral-900 to-black',
-    imageUrl: '/assets/aistudio/INK08776_806fd592.jpg'
+    imageUrl: '/assets/aistudio/INK08776_806fd592.jpg',
+    description: 'In Ruhango, master weaver Mukamana works beneath the dappled canopy of a banana grove. Hand-dyed natural sisal fibers are wound with mathematical precision into the iconic Agaseke peace basket—a symbol of unity and female economic sovereignty. Shot with a Zeiss Supreme Prime at T2.0 to isolate the tactile tension of each woven coil.',
+    backstory: 'Agaseke weaving demands complete concentration. Rather than staging an artificial studio environment, we filmed inside the artisan’s living space where generations have passed down the spiral weaving technique.'
   },
   {
     id: 'a4',
@@ -423,7 +429,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2024',
     aspectRatio: 'landscape',
     gradient: 'from-amber-950 via-zinc-900 to-black',
-    imageUrl: '/assets/aistudio/new_1_2f61cc23.jpg'
+    imageUrl: '/assets/aistudio/new_1_2f61cc23.jpg',
+    description: 'Along the fog-dense Nyabarongo river basin at 05:45 AM, cane cutters move in quiet synchrony toward the fields. The low mist diffuses ambient dawn light into an ethereal silver gradient. Our cinema unit tracked alongside them with a stabilized 40mm Cooke Anamorphic lens, preserving the raw, unhurried dignity of dawn labor in rural Rwanda.',
+    backstory: 'We arrived at the river banks at 04:30 AM in total darkness to mount our camera package. When the ambient dawn twilight appeared, it formed an almost painterly gradient across the water and reeds.'
   },
   {
     id: 'a5',
@@ -436,7 +444,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2023',
     aspectRatio: 'portrait',
     gradient: 'from-stone-900 via-zinc-950 to-black',
-    imageUrl: '/assets/aistudio/MSG01940_1_783cf665.jpg'
+    imageUrl: '/assets/aistudio/MSG01940_1_783cf665.jpg',
+    description: 'A decisive moment from our narrative short film The Morning Pact. Two brothers seal an ancestral land agreement amidst the golden reed beds of the Akanyaru wetlands. Backlit by low-angle morning sunlight, the dust and rising moisture create a natural cinematic halo, rendered with rich warm contrast.',
+    backstory: 'This frame was captured on the final take of day three. The low sun aligned directly behind the actors’ clasped hands, creating an organic lens flare that became the key promotional key art for our international festival run.'
   },
   {
     id: 'a6',
@@ -449,7 +459,9 @@ export const ARCHIVE_STILLS: ArchiveStill[] = [
     year: '2023',
     aspectRatio: 'portrait',
     gradient: 'from-zinc-950 via-neutral-900 to-black',
-    imageUrl: '/assets/aistudio/MSG01932_1_d0a10631.jpg'
+    imageUrl: '/assets/aistudio/MSG01932_1_d0a10631.jpg',
+    description: 'Field workers marching into the early shift across Kabuye’s agricultural landscape. The dramatic low-angle perspective highlights the rhythmic silhouette of hand-forged tools against the overcast Rwandan sky. Recorded on the Arri Alexa 35 sensor at 96 frames per second to capture the particulate moisture suspended in the river air.',
+    backstory: 'Shot inches from the damp earth using a low-slung underslung rig. We wanted the audience to feel the weight of each stride, honoring the individuals whose relentless work underpins Kigali’s daily sustenance.'
   }
 ];
 
