@@ -12,7 +12,7 @@ interface WorkSectionProps {
 type ViewMode = 'grid' | 'editorial' | 'list';
 
 /**
- * Mosaic Cell component that fits inside the 100% Full-Bleed Big Perfect Square
+ * Mosaic Cell component that fits inside the Big Perfect Square
  */
 function SquareMosaicCard({
   project,
@@ -33,9 +33,9 @@ function SquareMosaicCard({
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       onClick={onClick}
       data-cursor="VIEW"
-      className={`group cursor-pointer relative overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/40 transition-all duration-300 font-liber ${spanClass}`}
+      className={`group cursor-pointer relative overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/40 transition-all duration-300 rounded font-liber ${spanClass}`}
     >
-      {/* Full-bleed photo fills 100% of cell */}
+      {/* Photo fills the entire cell */}
       <BlurImage
         src={project.imageUrl}
         alt={project.title}
@@ -182,11 +182,11 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
   };
 
   /**
-   * Calculates the exact grid tessellation so that the items form a 100% edge-to-edge BIG PERFECT SQUARE
+   * Calculates the exact grid tessellation so that the items form a BIG PERFECT SQUARE
    */
   const getSquareLayout = (itemsCount: number) => {
     if (itemsCount === 10) {
-      // 4x4 Grid = 16 cells (2x2 + 8 1x1 + 2x2 = 16 cells). Complete big perfect square with 0 margin.
+      // 4x4 Grid = 16 cells (2x2 + 8 1x1 + 2x2 = 16 cells). Complete big perfect square!
       return {
         gridClass: 'grid-cols-4 grid-rows-4',
         spans: [
@@ -240,19 +240,19 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
   return (
     <section
       id="work"
-      className="relative w-full pt-16 md:pt-24 pb-20 md:pb-32 bg-[#050505] text-white border-t border-white/10 overflow-hidden font-liber"
+      className="relative w-full py-24 md:py-32 bg-[#050505] text-white border-t border-white/10 overflow-hidden font-liber"
       onMouseMove={handleMouseMove}
     >
-      {/* 1. Gallery Section Header & Controls (Padded for clean reading) */}
-      <div className="w-full px-6 md:px-12 lg:px-16 pb-8 md:pb-10">
+      <div className="w-full px-6 md:px-12 lg:px-16 space-y-12">
+        {/* 1. Gallery Section Header & Controls */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10"
         >
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <span className="text-[11px] font-liber uppercase tracking-[0.2em] text-white/40 block">
               Gallery Works
             </span>
@@ -292,7 +292,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
                 className={`p-1.5 rounded transition-colors ${
                   viewMode === 'grid' ? 'text-white bg-white/10' : 'text-white/40 hover:text-white'
                 }`}
-                title="Full-Width Big Perfect Square"
+                title="Big Perfect Square Gallery"
                 aria-label="Grid view"
               >
                 <LayoutGrid className="w-4 h-4" />
@@ -322,14 +322,12 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
             </div>
           </div>
         </motion.div>
-      </div>
 
-      {/* 2. 100% FULL-WIDTH BIG PERFECT SQUARE GRID (No side margins, zero white space) */}
-      {viewMode === 'grid' && (
-        <div className="w-full px-0 mx-0">
-          <div className="w-full aspect-square relative">
+        {/* 2. BIG PERFECT SQUARE GALLERY MODE (With matched Visual Archive margins & gap) */}
+        {viewMode === 'grid' && (
+          <div className="w-full aspect-square relative pt-2">
             <div
-              className={`grid ${squareConfig.gridClass} gap-1 sm:gap-1.5 md:gap-2 w-full h-full aspect-square`}
+              className={`grid ${squareConfig.gridClass} gap-3 sm:gap-4 md:gap-6 w-full h-full aspect-square`}
             >
               {filteredProjects.map((project, idx) => {
                 const conf = squareConfig.spans[idx] || {
@@ -348,69 +346,69 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
               })}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* 3. EDITORIAL FEED MODE */}
-      {viewMode === 'editorial' && (
-        <div className="w-full px-6 md:px-12 lg:px-16 space-y-16 md:space-y-24 pt-4">
-          {filteredProjects.map((project) => (
-            <EditorialFeedCard
-              key={project.id}
-              project={project}
-              onClick={() => onSelectProject(project)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* 4. INDEX / LIST MODE */}
-      {viewMode === 'list' && (
-        <div className="w-full px-6 md:px-12 lg:px-16 pt-4 divide-y divide-white/10 border-b border-white/10">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => onSelectProject(project)}
-              onMouseEnter={() => setHoveredProject(project)}
-              onMouseLeave={() => setHoveredProject(null)}
-              data-cursor="VIEW"
-              className="group py-6 md:py-8 cursor-pointer grid grid-cols-12 gap-4 items-center hover:bg-white/[0.02] transition-colors px-2"
-            >
-              <div className="col-span-7 md:col-span-8 font-liber font-bold text-xl sm:text-2xl text-white group-hover:text-white/80 transition-colors">
-                {project.title}
-              </div>
-              <div className="col-span-5 md:col-span-4 text-xs font-liber text-white/50 text-right md:text-left truncate">
-                {project.client} · {project.category}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Floating Cursor Preview for List Mode */}
-      <AnimatePresence>
-        {viewMode === 'list' && hoveredProject && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              position: 'fixed',
-              left: cursorPos.x + 24,
-              top: cursorPos.y - 100,
-              pointerEvents: 'none',
-              zIndex: 60,
-            }}
-            className="w-56 h-36 rounded-lg overflow-hidden border border-white/20 shadow-2xl bg-black hidden lg:block"
-          >
-            <BlurImage
-              src={hoveredProject.imageUrl}
-              alt={hoveredProject.title}
-            />
-          </motion.div>
         )}
-      </AnimatePresence>
+
+        {/* 3. EDITORIAL FEED MODE */}
+        {viewMode === 'editorial' && (
+          <div className="space-y-16 md:space-y-24 pt-4">
+            {filteredProjects.map((project) => (
+              <EditorialFeedCard
+                key={project.id}
+                project={project}
+                onClick={() => onSelectProject(project)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* 4. INDEX / LIST MODE */}
+        {viewMode === 'list' && (
+          <div className="pt-4 divide-y divide-white/10 border-b border-white/10">
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                onClick={() => onSelectProject(project)}
+                onMouseEnter={() => setHoveredProject(project)}
+                onMouseLeave={() => setHoveredProject(null)}
+                data-cursor="VIEW"
+                className="group py-6 md:py-8 cursor-pointer grid grid-cols-12 gap-4 items-center hover:bg-white/[0.02] transition-colors px-2"
+              >
+                <div className="col-span-7 md:col-span-8 font-liber font-bold text-xl sm:text-2xl text-white group-hover:text-white/80 transition-colors">
+                  {project.title}
+                </div>
+                <div className="col-span-5 md:col-span-4 text-xs font-liber text-white/50 text-right md:text-left truncate">
+                  {project.client} · {project.category}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Floating Cursor Preview for List Mode */}
+        <AnimatePresence>
+          {viewMode === 'list' && hoveredProject && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'fixed',
+                left: cursorPos.x + 24,
+                top: cursorPos.y - 100,
+                pointerEvents: 'none',
+                zIndex: 60,
+              }}
+              className="w-56 h-36 rounded-lg overflow-hidden border border-white/20 shadow-2xl bg-black hidden lg:block"
+            >
+              <BlurImage
+                src={hoveredProject.imageUrl}
+                alt={hoveredProject.title}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }
