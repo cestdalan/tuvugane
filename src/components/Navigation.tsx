@@ -41,7 +41,6 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
   const navLinks = [
     { id: 'work', label: 'works' },
     { id: 'archive', label: 'archive' },
-    { id: 'what-we-do', label: 'practice' },
     { id: 'about', label: 'studio' },
     { id: 'contact', label: 'contact' },
   ];
