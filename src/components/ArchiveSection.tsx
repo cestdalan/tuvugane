@@ -117,7 +117,7 @@ export default function ArchiveSection() {
           </div>
         </motion.div>
 
-        {/* Gallery Masonry Wall with Skeleton Blur Load */}
+        {/* Gallery Masonry Wall: Images Fill Entire Card, No Years */}
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 pt-4">
           {filteredStills.map((still, idx) => {
             const isTall = still.aspectRatio === 'portrait';
@@ -130,7 +130,7 @@ export default function ArchiveSection() {
                 transition={{ duration: 0.6, delay: (idx % 4) * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => openLightbox(still)}
                 data-cursor="EXPAND"
-                className="break-inside-avoid group cursor-pointer relative overflow-hidden bg-black border border-white/10 hover:border-white/30 transition-all duration-300"
+                className="break-inside-avoid group cursor-pointer relative overflow-hidden bg-black border border-white/10 hover:border-white/30 transition-all duration-300 rounded"
               >
                 <div className={`relative w-full ${isTall ? 'aspect-[3/4]' : 'aspect-[16/10]'}`}>
                   <BlurImage
@@ -139,26 +139,21 @@ export default function ArchiveSection() {
                     priority={idx < 4}
                     className="group-hover:brightness-105 group-hover:scale-103 transition-all duration-500 ease-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none" />
                   <div className="absolute inset-0 film-grain pointer-events-none" />
 
-                  {/* Corner Year Pill */}
-                  <div className="absolute top-2.5 right-2.5 text-[10px] font-liber text-white/60 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded">
-                    {still.year}
-                  </div>
-
-                  {/* Bottom Hover Caption */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
+                  {/* Bottom Caption Overlay: Title and Camera (NO year) */}
+                  <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-end justify-between z-10 pointer-events-none">
                     <div className="space-y-0.5 max-w-[85%]">
-                      <span className="text-[10px] font-liber text-white/50 block">
+                      <span className="text-[10px] font-liber font-medium text-white/60 block">
                         {still.camera}
                       </span>
-                      <h4 className="font-liber font-semibold text-sm text-white truncate">
+                      <h4 className="font-liber font-bold text-sm sm:text-base text-white truncate">
                         {still.title}
                       </h4>
                     </div>
-                    <div className="p-1.5 rounded-full bg-white/10 text-white group-hover:bg-white group-hover:text-black transition-colors">
-                      <Maximize2 className="w-3 h-3" />
+                    <div className="p-1.5 rounded-full bg-white/15 text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
+                      <Maximize2 className="w-3.5 h-3.5" />
                     </div>
                   </div>
                 </div>
@@ -168,28 +163,32 @@ export default function ArchiveSection() {
         </div>
       </div>
 
-      {/* Full-Screen Pure Minimal Lightbox Modal with Skeleton Blur Load */}
+      {/* Uncropped, Full-Fidelity Lightbox Modal on PC View with Description Below */}
       {selectedStill && (
         <div
           ref={modalScrollRef}
-          className="fixed inset-0 z-50 flex flex-col justify-between bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber"
+          onClick={(e) => {
+            // Close when clicking the outer backdrop
+            if (e.target === e.currentTarget) closeLightbox();
+          }}
+          className="fixed inset-0 z-50 flex flex-col justify-between bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber overflow-y-auto"
         >
           {/* Top Bar */}
-          <div className="w-full px-6 md:px-12 py-5 flex items-center justify-between border-b border-white/10 bg-black/60 backdrop-blur-md">
-            <div className="flex items-center gap-4 text-xs font-liber">
-              <span className="text-white/40 uppercase">Visual Archive</span>
+          <div className="w-full px-6 md:px-12 py-4 flex items-center justify-between border-b border-white/10 bg-black/80 backdrop-blur-md shrink-0">
+            <div className="flex items-center gap-3 text-xs font-liber">
+              <span className="text-white/40 uppercase tracking-widest text-[10px]">Visual Archive</span>
               <span className="text-white/20">/</span>
               <span className="text-white font-medium">
-                {selectedStill.title}
+                {String(currentIndex + 1).padStart(2, '0')} of {String(ARCHIVE_STILLS.length).padStart(2, '0')}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 bg-white/5 rounded p-1 border border-white/10">
+              <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/10">
                 <button
                   type="button"
                   onClick={navigatePrev}
-                  className="p-1 text-white/60 hover:text-white transition-colors"
+                  className="p-1.5 text-white/60 hover:text-white transition-colors rounded-full"
                   aria-label="Previous image"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -197,7 +196,7 @@ export default function ArchiveSection() {
                 <button
                   type="button"
                   onClick={navigateNext}
-                  className="p-1 text-white/60 hover:text-white transition-colors"
+                  className="p-1.5 text-white/60 hover:text-white transition-colors rounded-full"
                   aria-label="Next image"
                 >
                   <ArrowRight className="w-4 h-4" />
@@ -207,45 +206,57 @@ export default function ArchiveSection() {
               <button
                 type="button"
                 onClick={closeLightbox}
-                className="p-1.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black font-liber font-semibold text-xs transition-colors"
                 aria-label="Close lightbox"
               >
-                <X className="w-4 h-4" />
+                <span>close</span>
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Center Stage: Photo in Full Magnificence with Blur Load */}
-          <div className="flex-1 flex items-center justify-center p-4 sm:p-8 max-h-[75vh]">
-            <BlurImage
-              src={selectedStill.imageUrl}
-              alt={selectedStill.title}
-              priority={true}
-              wrapperClassName="max-h-full max-w-full rounded shadow-2xl bg-transparent"
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
-
-          {/* Bottom Bar: Quiet Exif Details */}
-          <div className="w-full px-6 md:px-12 py-5 border-t border-white/10 bg-black/60 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
-            <div>
-              <h3 className="font-liber font-semibold text-base text-white">
-                {selectedStill.title}
-              </h3>
-              <p className="text-white/50 font-light mt-0.5">
-                {selectedStill.description}
-              </p>
+          {/* Center Stage: Photo Displayed In Full (Never cut in half, uncropped) */}
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeLightbox();
+            }}
+            className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 min-h-0"
+          >
+            <div className="relative flex items-center justify-center max-h-[66vh] sm:max-h-[70vh]">
+              <picture>
+                {selectedStill.imageUrl.match(/\.(jpg|jpeg)$/i) && (
+                  <source
+                    srcSet={selectedStill.imageUrl.replace(/\.(jpg|jpeg)$/i, '.webp')}
+                    type="image/webp"
+                  />
+                )}
+                <img
+                  src={selectedStill.imageUrl}
+                  alt={selectedStill.title}
+                  className="max-h-[64vh] sm:max-h-[68vh] max-w-[90vw] w-auto h-auto object-contain rounded shadow-2xl transition-all"
+                />
+              </picture>
             </div>
 
-            <div className="flex items-center gap-6 text-[11px] font-liber text-white/60 shrink-0">
-              <div className="flex items-center gap-1.5">
-                <Camera className="w-3.5 h-3.5 text-white/40" />
-                <span>{selectedStill.camera}</span>
+            {/* Clear Description Block Directly Underneath The Image (Never cut off) */}
+            <div className="mt-4 max-w-2xl text-center space-y-1.5 px-4 pb-2">
+              <h3 className="font-liber font-bold text-lg sm:text-2xl text-white">
+                {selectedStill.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-white/70 font-light leading-relaxed max-w-xl mx-auto">
+                {selectedStill.description}
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[11px] font-liber text-white/50">
+                <div className="flex items-center gap-1.5">
+                  <Camera className="w-3.5 h-3.5 text-white/40" />
+                  <span>{selectedStill.camera}</span>
+                </div>
+                <span>·</span>
+                <span>{selectedStill.lens}</span>
+                <span>·</span>
+                <span>{selectedStill.location}</span>
               </div>
-              <span>·</span>
-              <span>{selectedStill.lens}</span>
-              <span>·</span>
-              <span>{selectedStill.location}</span>
             </div>
           </div>
         </div>

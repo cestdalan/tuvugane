@@ -181,10 +181,6 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
               </div>
             )}
           </button>
-
-          <span className="text-[11px] text-white/40 tracking-wider hidden sm:inline-block font-mono">
-            -01°57' S · 30°03' E
-          </span>
         </div>
       </div>
     </section>

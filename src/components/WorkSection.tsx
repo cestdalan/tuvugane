@@ -13,7 +13,8 @@ type ViewMode = 'grid' | 'editorial' | 'list';
 
 /**
  * Parallax Card for Gallery Grid:
- * Uses scroll-linked progress to gently glide the image vertically inside its container
+ * The card is the exact size of the image, with the photo filling the entire card.
+ * Minimal overlay for title & category; no years, no separate footer block.
  */
 function ParallaxGridCard({
   project,
@@ -30,9 +31,8 @@ function ParallaxGridCard({
     offset: ['start end', 'end start'],
   });
 
-  // Light, refined scroll parallax: translates slightly as it moves through viewport
-  const y = useTransform(scrollYProgress, [0, 1], [-18, 18]);
-
+  // Light, refined scroll parallax
+  const y = useTransform(scrollYProgress, [0, 1], [-16, 16]);
   const isTall = project.aspectRatio === 'portrait';
 
   return (
@@ -44,62 +44,51 @@ function ParallaxGridCard({
       transition={{ duration: 0.7, delay: (idx % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
       onClick={onClick}
       data-cursor="VIEW"
-      className="group cursor-pointer flex flex-col justify-between overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/30 transition-all duration-500 font-liber"
+      className={`group cursor-pointer relative overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/30 transition-all duration-500 font-liber w-full ${
+        isTall ? 'aspect-[3/4]' : 'aspect-[16/10]'
+      }`}
     >
-      {/* Outer Viewport Box with overflow-hidden */}
-      <div
-        className={`relative w-full overflow-hidden bg-zinc-950 ${
-          isTall ? 'aspect-[3/4]' : 'aspect-[16/10]'
-        }`}
-      >
-        {/* Parallax Inner Container: Slightly oversized height to allow vertical glide */}
-        <motion.div style={{ y }} className="w-full h-[116%] -top-[8%] relative">
-          <BlurImage
-            src={project.imageUrl}
-            alt={project.title}
-            priority={idx < 4}
-            className="group-hover:brightness-105 group-hover:scale-102 transition-transform duration-700 ease-out"
-          />
-        </motion.div>
+      {/* 1. Full-Bleed Image Filling the Entire Card with Parallax */}
+      <motion.div style={{ y }} className="w-full h-[116%] -top-[8%] relative">
+        <BlurImage
+          src={project.imageUrl}
+          alt={project.title}
+          priority={idx < 4}
+          className="group-hover:brightness-105 group-hover:scale-102 transition-transform duration-700 ease-out"
+        />
+      </motion.div>
 
-        {/* Ambient Grain & Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
-        <div className="absolute inset-0 film-grain pointer-events-none" />
+      {/* 2. Ambient Film Grain */}
+      <div className="absolute inset-0 film-grain pointer-events-none" />
 
-        {/* Corner Metadata */}
-        <div className="absolute top-3 left-3 text-[10px] font-liber font-medium text-white/70 uppercase tracking-wider">
+      {/* 3. Top Category Label (No year) */}
+      <div className="absolute top-3.5 left-3.5 z-10 pointer-events-none">
+        <span className="text-[10px] font-liber font-semibold text-white/80 uppercase tracking-widest bg-black/40 backdrop-blur-md px-2.5 py-1 rounded">
           {project.category}
-        </div>
-        <div className="absolute top-3 right-3 text-[10px] font-liber text-white/50">
-          {project.year}
-        </div>
-
-        {/* Bottom Hover Icon */}
-        <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-          <ArrowUpRight className="w-4 h-4" />
-        </div>
+        </span>
       </div>
 
-      {/* Minimal Caption Footer */}
-      <div className="p-4 md:p-5 flex items-baseline justify-between gap-4 border-t border-white/5">
-        <div>
+      {/* 4. Integrated Bottom Caption Overlay Inside the Card */}
+      <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-between gap-4 z-10 pointer-events-none">
+        <div className="space-y-1">
+          <span className="text-[11px] font-liber text-white/60 block">
+            {project.client}
+          </span>
           <h3 className="font-liber font-bold text-lg sm:text-xl text-white group-hover:text-white/80 transition-colors">
             {project.title}
           </h3>
-          <p className="text-xs text-white/50 font-light mt-0.5 line-clamp-1">
-            {project.summary}
-          </p>
         </div>
-        <span className="text-[11px] font-liber text-white/40 shrink-0">
-          {project.client.split('&')[0]}
-        </span>
+
+        <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0 shrink-0">
+          <ArrowUpRight className="w-4 h-4" />
+        </div>
       </div>
     </motion.div>
   );
 }
 
 /**
- * Parallax Card for Editorial Feed
+ * Parallax Card for Editorial Feed (No years)
  */
 function ParallaxEditorialCard({
   project,
@@ -127,7 +116,7 @@ function ParallaxEditorialCard({
       data-cursor="EXPAND"
       className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-b border-white/10 pb-16 font-liber"
     >
-      {/* Main Large Visual Frame with light parallax */}
+      {/* Main Large Visual Frame */}
       <div className="lg:col-span-8 relative aspect-[16/9] overflow-hidden bg-black border border-white/10 group-hover:border-white/30 transition-all">
         <motion.div style={{ y }} className="w-full h-[116%] -top-[8%] relative">
           <BlurImage
@@ -139,13 +128,11 @@ function ParallaxEditorialCard({
         <div className="absolute inset-0 film-grain pointer-events-none" />
       </div>
 
-      {/* Right Side Editorial Notes */}
+      {/* Right Side Editorial Notes (No year) */}
       <div className="lg:col-span-4 space-y-6">
         <div className="space-y-2">
-          <div className="flex items-center gap-3 text-xs font-liber text-white/40 uppercase tracking-wider">
-            <span>{project.category}</span>
-            <span>·</span>
-            <span>{project.year}</span>
+          <div className="text-xs font-liber text-white/50 uppercase tracking-wider font-semibold">
+            {project.category}
           </div>
 
           <h3 className="font-liber font-bold text-3xl sm:text-4xl text-white group-hover:text-white/80 transition-colors">
@@ -303,7 +290,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
           </div>
         </motion.div>
 
-        {/* 1. GALLERY GRID MODE (with scroll parallax and skeleton blur) */}
+        {/* 1. GALLERY GRID MODE (Cards ARE the size of the images, no years) */}
         {viewMode === 'grid' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pt-4">
             {filteredProjects.map((project, idx) => (
@@ -317,7 +304,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
           </div>
         )}
 
-        {/* 2. EDITORIAL FEED MODE (with scroll parallax and skeleton blur) */}
+        {/* 2. EDITORIAL FEED MODE */}
         {viewMode === 'editorial' && (
           <div className="space-y-16 md:space-y-24 pt-4">
             {filteredProjects.map((project) => (
@@ -330,7 +317,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
           </div>
         )}
 
-        {/* 3. INDEX / LIST MODE (No numbers, clean Liber font) */}
+        {/* 3. INDEX / LIST MODE (No numbers, no years) */}
         {viewMode === 'list' && (
           <div className="pt-4 divide-y divide-white/10 border-b border-white/10">
             {filteredProjects.map((project) => (
@@ -342,17 +329,11 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
                 data-cursor="VIEW"
                 className="group py-6 md:py-8 cursor-pointer grid grid-cols-12 gap-4 items-center hover:bg-white/[0.02] transition-colors px-2"
               >
-                <div className="col-span-7 md:col-span-6 font-liber font-bold text-xl sm:text-2xl text-white group-hover:text-white/80 transition-colors">
+                <div className="col-span-7 md:col-span-8 font-liber font-bold text-xl sm:text-2xl text-white group-hover:text-white/80 transition-colors">
                   {project.title}
                 </div>
-                <div className="col-span-5 md:col-span-3 text-xs font-liber text-white/50 truncate">
-                  {project.client}
-                </div>
-                <div className="hidden md:block md:col-span-2 text-xs font-liber text-white/40">
-                  {project.category}
-                </div>
-                <div className="hidden md:flex md:col-span-1 justify-end font-liber text-xs text-white/40">
-                  {project.year}
+                <div className="col-span-5 md:col-span-4 text-xs font-liber text-white/50 text-right md:text-left truncate">
+                  {project.client} · {project.category}
                 </div>
               </div>
             ))}
