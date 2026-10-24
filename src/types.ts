@@ -15,23 +15,25 @@ export interface Project {
   client: string;
   year: string;
   category: 'Film & Documentary' | 'Motion & 3D' | 'Commercials';
-  categoryLabel: string;
+  categoryLabel?: string;
   role: string;
   summary: string;
-  narrative: string;
-  challenge: string;
-  solution: string;
-  deliverables: string[];
-  credits: ProjectCredit[];
-  metrics: ProjectMetric[];
-  accentColor: string;
-  videoDuration: string;
+  narrative?: string;
+  challenge?: string;
+  solution?: string;
+  deliverables?: string[];
+  credits?: ProjectCredit[];
+  metrics?: ProjectMetric[];
+  accentColor?: string;
+  videoDuration?: string;
   videoUrl?: string;
   imageUrl: string;
+  camera?: string;
+  aspectRatio?: 'landscape' | 'portrait' | 'square' | 'wide';
   galleryImages: {
     title: string;
     caption: string;
-    gradient: string;
+    gradient?: string;
     imageUrl?: string;
   }[];
 }
@@ -42,8 +44,9 @@ export interface Service {
   title: string;
   tagline: string;
   description: string;
-  deliverables: string[];
-  tools: string[];
+  imageUrl?: string;
+  deliverables?: string[];
+  tools?: string[];
 }
 
 export interface ArchiveStill {
@@ -53,10 +56,10 @@ export interface ArchiveStill {
   location: string;
   camera: string;
   lens: string;
-  exif: string;
+  exif?: string;
   year: string;
-  aspectRatio: 'landscape' | 'portrait' | 'square';
-  gradient: string;
+  aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
+  gradient?: string;
   imageUrl: string;
   description: string;
   backstory?: string;

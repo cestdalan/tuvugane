@@ -4,9 +4,9 @@ import { Project } from './types';
 import CustomCursor from './components/CustomCursor';
 import Navigation from './components/Navigation';
 import HeroSection from './components/HeroSection';
-import ServicesSection from './components/ServicesSection';
 import WorkSection from './components/WorkSection';
 import ArchiveSection from './components/ArchiveSection';
+import ServicesSection from './components/ServicesSection';
 import AboutSection from './components/AboutSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
@@ -19,11 +19,11 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [preselectedService, setPreselectedService] = useState<string>('');
 
-  // Bulletproof smooth scroll using absolute document coordinates
+  // Smooth scroll using absolute document coordinates
   const scrollToSection = useCallback((sectionId: string, updateHistory = true) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const targetTop = element.getBoundingClientRect().top + window.scrollY - 80;
+      const targetTop = element.getBoundingClientRect().top + window.scrollY - 70;
       window.scrollTo({
         top: Math.max(0, targetTop),
         behavior: 'smooth',
@@ -48,7 +48,7 @@ export default function App() {
           setSelectedProject(matched);
         }
       } else {
-        const validSections = ['hero', 'what-we-do', 'work', 'archive', 'about', 'contact', 'inquire'];
+        const validSections = ['hero', 'work', 'archive', 'what-we-do', 'about', 'contact'];
         if (validSections.includes(hash)) {
           setTimeout(() => {
             scrollToSection(hash, false);
@@ -62,22 +62,13 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashRouting);
   }, [scrollToSection]);
 
-  // Robust ScrollSpy Engine tracking sections including #inquire at the bottom
+  // ScrollSpy tracking sections
   useEffect(() => {
-    const sectionIds = ['hero', 'what-we-do', 'work', 'archive', 'about', 'contact', 'inquire'];
+    const sectionIds = ['hero', 'work', 'archive', 'what-we-do', 'about', 'contact'];
 
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 120;
-      const windowHeight = window.innerHeight;
-      const fullHeight = document.documentElement.scrollHeight;
+      const scrollPos = window.scrollY + 140;
 
-      // If user reaches near the very bottom, highlight #inquire
-      if (window.scrollY + windowHeight >= fullHeight - 150) {
-        setActiveSection('inquire');
-        return;
-      }
-
-      // Check sections from bottom to top
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const id = sectionIds[i];
         const el = document.getElementById(id);
@@ -106,21 +97,20 @@ export default function App() {
     window.history.pushState(null, '', '#work');
   };
 
-  // Inquiry selection from Services
   const handleSelectServiceForInquiry = (serviceTitle: string) => {
     setPreselectedService(serviceTitle);
-    scrollToSection('inquire');
+    scrollToSection('contact');
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050505] text-[#ededed] antialiased selection:bg-white selection:text-black">
-      {/* 1. Custom Spring-Physics Cursor */}
+    <div className="relative min-h-screen w-full bg-[#050505] text-[#ededed] antialiased selection:bg-white selection:text-black font-liber">
+      {/* 1. Custom Gallery Cursor */}
       <CustomCursor />
 
-      {/* 2. Top Bar & Navigation Architecture */}
+      {/* 2. Minimalist Header Navigation */}
       <Navigation activeSection={activeSection} onNavigate={scrollToSection} />
 
-      {/* 3. Main Page Sections */}
+      {/* 3. Main Gallery Web Page */}
       <main className="w-full">
         {/* Hero Section (#hero) */}
         <HeroSection
@@ -128,22 +118,22 @@ export default function App() {
           onNavigate={scrollToSection}
         />
 
-        {/* Services / What We Do Section (#what-we-do) */}
-        <ServicesSection onSelectServiceForInquiry={handleSelectServiceForInquiry} />
-
-        {/* Featured Work Portfolio (#work) */}
+        {/* Selected Works Gallery (#work) - placed right after hero for pure gallery primacy */}
         <WorkSection
           projects={PROJECTS}
           onSelectProject={handleSelectProject}
         />
 
-        {/* Visual Archive (#archive) */}
+        {/* Visual Archive & Optical Monograph (#archive) */}
         <ArchiveSection />
 
-        {/* About Manifesto (#about) */}
+        {/* Practice / Disciplines (#what-we-do) */}
+        <ServicesSection onSelectServiceForInquiry={handleSelectServiceForInquiry} />
+
+        {/* Studio & Crew (#about) */}
         <AboutSection onNavigate={scrollToSection} />
 
-        {/* Contact Desk & Inquire Form (#contact & #inquire) */}
+        {/* Dialogue Desk (#contact) */}
         <ContactSection preselectedService={preselectedService} />
       </main>
 

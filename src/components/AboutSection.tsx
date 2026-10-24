@@ -1,115 +1,114 @@
 import { motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
+import BlurImage from './BlurImage';
 
 interface AboutSectionProps {
   onNavigate: (sectionId: string) => void;
 }
 
 export default function AboutSection({ onNavigate }: AboutSectionProps) {
-  const pillars = [
-    {
-      num: '01',
-      title: 'Truth in Storytelling',
-      text: 'Cinema is not merely aesthetic ornamentation; it is the radical preservation of human truth. We embed deeply into communities and landscapes to uncover stories that resonate with authentic weight rather than manufactured tropes.'
-    },
-    {
-      num: '02',
-      title: 'Film & Motion Parity',
-      text: 'We dismantle the arbitrary boundary between organic live-action filmmaking and digital motion design. By uniting large-format cinema sensors with procedural 3D simulations and kinetic typography, we craft singular visual ecosystems.'
-    },
-    {
-      num: '03',
-      title: 'African Roots, Global Lens',
-      text: 'Operating from our studio in Kacyiru, Kigali, we bring the rhythm, architectural ambition, and narrative brilliance of modern Africa to prestigious international stages, broadcasting across festivals, museum projections, and global commercial campaigns.'
-    }
-  ];
-
-  const studioStats = [
-    { label: 'International Festival Laurels', value: '24+' },
-    { label: 'Commercial & Narrative Films', value: '120+' },
-    { label: 'Camera Pipeline Resolution', value: '8K HDR' },
-    { label: 'Global Client Origin', value: '60%' }
+  const specs = [
+    { label: 'Origin', value: 'Kigali, Rwanda' },
+    { label: 'Est.', value: '2017' },
+    { label: 'Pipeline', value: '8K LF & 35mm' },
+    { label: 'Festival Laurels', value: '24+' },
   ];
 
   return (
-    <section id="about" className="relative w-full py-28 md:py-36 bg-[#050505] text-white border-t border-white/10 overflow-hidden">
-      <div className="w-full px-6 md:px-12 lg:px-16 space-y-24">
-        {/* Section Header & Manifesto Intro: Words flow in smoothly on scroll */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-70px" }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start"
-        >
-          <div className="lg:col-span-5 space-y-4">
-            <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight leading-[1.02] text-white">
-              We capture what cannot be fabricated.
-            </h2>
-          </div>
-
-          <div className="lg:col-span-7 space-y-6 lg:pt-4">
-            <p className="text-lg sm:text-2xl text-white/80 font-light leading-relaxed">
-              Founded in Kigali, <strong className="text-white font-medium">Tuvugane</strong> was built on a singular conviction: that modern cinema from Africa deserves the most uncompromising technical craft on earth.
-            </p>
-            <p className="text-sm sm:text-base text-white/60 font-light leading-relaxed">
-              "Tuvugane" is a Kinyarwanda word meaning <em>"Let us speak together."</em> We approach every commission—whether a conservation documentary in the cloud forests of the Virunga Massif, a commercial campaign for international mobility, or an avant-garde runway film—as an intimate conversation between creator, subject, and audience.
-            </p>
-
-            {/* Direct jump to contact */}
-            <div className="pt-4">
-              <button
-                type="button"
-                onClick={() => onNavigate('contact')}
-                data-cursor="CONTACT"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-white border-b border-white pb-1 hover:text-white/70 hover:border-white/70 transition-colors"
-              >
-                <span>Initiate a dialogue with our directors</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 3 Pillars Grid: Cards flow in on scroll */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-white/10">
-          {pillars.map((pillar, idx) => (
-            <motion.div
-              key={pillar.num}
-              initial={{ opacity: 0, y: 35 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-4 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:border-white/20 transition-all"
-            >
-              <span className="font-mono text-sm text-white/40 block">{pillar.num}</span>
-              <h3 className="font-display font-bold text-xl sm:text-2xl text-white">{pillar.title}</h3>
-              <p className="text-sm text-white/60 font-light leading-relaxed">
-                {pillar.text}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Studio Stats Strip: Flows in on scroll */}
+    <section
+      id="about"
+      className="relative w-full py-24 md:py-32 bg-[#050505] text-white border-t border-white/10 overflow-hidden font-liber"
+    >
+      <div className="w-full px-6 md:px-12 lg:px-16 space-y-16">
+        {/* Editorial Headline & Statement */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-8 md:p-10 rounded-2xl bg-[#0a0a0a] border border-white/10"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-baseline border-b border-white/10 pb-12"
         >
-          {studioStats.map((stat, idx) => (
+          <div className="lg:col-span-6 space-y-2">
+            <span className="text-[11px] font-liber uppercase tracking-[0.2em] text-white/40 block">
+              The Studio
+            </span>
+            <h2 className="font-liber font-black text-4xl sm:text-6xl tracking-tight text-white leading-tight">
+              Rooted in Africa. <br />
+              <span className="font-liber font-light text-white/70">Made for the world.</span>
+            </h2>
+          </div>
+
+          <div className="lg:col-span-6 space-y-6 lg:pl-6">
+            <p className="text-base sm:text-lg text-white/70 font-light leading-relaxed">
+              <strong className="text-white font-medium">Tuvugane</strong> (Kinyarwanda: <em>"Let us speak together"</em>) is a creative film and motion design studio headquartered in Kigali. We craft cinematic documentary, commercial narratives, and avant-garde kinetic direction.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('contact')}
+              data-cursor="DIALOGUE"
+              className="inline-flex items-center gap-2 text-xs font-liber font-semibold uppercase tracking-wider text-white border-b border-white pb-1 hover:text-white/60 hover:border-white/60 transition-colors"
+            >
+              <span>Initiate a dialogue</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Visual Studio Photo Triptych with Skeleton Blur Load */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          {/* Main Photo: Crew on Set */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="md:col-span-7 relative aspect-[16/10] overflow-hidden rounded bg-black border border-white/10 group"
+          >
+            <BlurImage
+              src="/assets/aistudio/trn_staff3_3_5b9708db.JPG"
+              alt="Tuvugane production crew on set"
+              className="group-hover:scale-102 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 film-grain pointer-events-none" />
+            <div className="absolute bottom-3 left-3 text-[10px] font-liber text-white/60 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded pointer-events-none">
+              Production Crew · On Set in Rwanda
+            </div>
+          </motion.div>
+
+          {/* Secondary Photo: Portraiture */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="md:col-span-5 relative aspect-[16/10] md:aspect-auto overflow-hidden rounded bg-black border border-white/10 group"
+          >
+            <BlurImage
+              src="/assets/aistudio/ASP_ANITHA_70_51cb7ec8.JPG"
+              alt="Studio portraiture"
+              className="group-hover:scale-102 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 film-grain pointer-events-none" />
+            <div className="absolute bottom-3 left-3 text-[10px] font-liber text-white/60 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded pointer-events-none">
+              Studio Portraiture · Chiaroscuro Study
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Minimal Specs Bar in Liber font */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-white/10 text-xs font-liber">
+          {specs.map((item, idx) => (
             <div key={idx} className="space-y-1">
-              <span className="text-xs font-mono uppercase tracking-wider text-white/40 block">
-                {stat.label}
+              <span className="text-white/40 uppercase tracking-widest text-[10px] block">
+                {item.label}
               </span>
-              <span className="font-display font-extrabold text-3xl sm:text-5xl text-white tabular-nums">
-                {stat.value}
+              <span className="text-white text-sm font-semibold tracking-wide">
+                {item.value}
               </span>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

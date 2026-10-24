@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Liber';
+  src: local('Liber'), local('Liberation Sans'), local('Libre Franklin');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 @theme {
-  --font-display: 'Syne', sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-liber: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
 }
 
 :root {
@@ -10,14 +19,22 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: #050505;
   color: #ededed;
   overflow-x: hidden;
 }
 
-h1, h2, h3, .font-display {
-  font-family: 'Syne', sans-serif;
+h1, h2, h3, h4, h5, h6, .font-display, button, input, textarea, a {
+  font-family: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-liber {
+  font-family: 'Liber', 'Libre Franklin', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-liber);
 }
 
 /* Custom scrollbar */
@@ -38,4 +55,35 @@ h1, h2, h3, .font-display {
 /* Subtle film grain texture */
 .film-grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Skeleton Shimmer Keyframes for batch blur loading */
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: skeleton-shimmer 1.8s infinite ease-in-out;
 }

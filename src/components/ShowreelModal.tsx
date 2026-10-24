@@ -82,17 +82,17 @@ export default function ShowreelModal({ isOpen, onClose }: ShowreelModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-8 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-8 animate-in fade-in duration-300 font-liber">
       {/* Container with cinematic framing */}
       <div className="relative w-full max-w-6xl flex flex-col bg-[#0a0a0a] border border-white/15 rounded-xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.9)]">
         {/* Top Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0d0d0d]">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="font-display font-bold text-sm tracking-wider uppercase text-white">
+            <span className="font-liber font-bold text-sm tracking-wider uppercase text-white">
               TUVUGANE · STUDIO SHOWREEL
             </span>
-            <span className="hidden sm:inline text-xs text-white/40 font-mono">
+            <span className="hidden sm:inline text-xs text-white/40 font-liber">
               [ 4K DCI · 24FPS · PRORES 4444 XQ ]
             </span>
           </div>

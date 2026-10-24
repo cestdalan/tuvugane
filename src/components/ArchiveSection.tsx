@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
 import { ArchiveStill } from '../types';
-import { X, Maximize2, ArrowLeft, ArrowRight, Film } from 'lucide-react';
+import { X, Maximize2, ArrowLeft, ArrowRight, Camera } from 'lucide-react';
+import BlurImage from './BlurImage';
 
 export default function ArchiveSection() {
   const [selectedStill, setSelectedStill] = useState<ArchiveStill | null>(null);
+  const [activeAspectFilter, setActiveAspectFilter] = useState<'all' | 'portrait' | 'landscape'>('all');
   const modalScrollRef = useRef<HTMLDivElement>(null);
 
   const openLightbox = (still: ArchiveStill) => {
@@ -18,47 +20,36 @@ export default function ArchiveSection() {
     document.body.style.overflow = '';
   };
 
+  const filteredStills =
+    activeAspectFilter === 'all'
+      ? ARCHIVE_STILLS
+      : ARCHIVE_STILLS.filter((s) => s.aspectRatio === activeAspectFilter);
+
   const currentIndex = selectedStill
     ? ARCHIVE_STILLS.findIndex((s) => s.id === selectedStill.id)
     : -1;
 
-  const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % ARCHIVE_STILLS.length : 0;
-  const prevIndex = currentIndex >= 0 ? (currentIndex - 1 + ARCHIVE_STILLS.length) % ARCHIVE_STILLS.length : 0;
-
-  const nextStill = ARCHIVE_STILLS[nextIndex];
-  const prevStill = ARCHIVE_STILLS[prevIndex];
-
-  const navigateToStill = (still: ArchiveStill) => {
-    setSelectedStill(still);
-    if (modalScrollRef.current) {
-      modalScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   const navigateNext = () => {
     if (currentIndex >= 0) {
-      navigateToStill(nextStill);
+      const nextIdx = (currentIndex + 1) % ARCHIVE_STILLS.length;
+      setSelectedStill(ARCHIVE_STILLS[nextIdx]);
     }
   };
 
   const navigatePrev = () => {
     if (currentIndex >= 0) {
-      navigateToStill(prevStill);
+      const prevIdx = (currentIndex - 1 + ARCHIVE_STILLS.length) % ARCHIVE_STILLS.length;
+      setSelectedStill(ARCHIVE_STILLS[prevIdx]);
     }
   };
 
-  // Keyboard navigation for full view
   useEffect(() => {
     if (!selectedStill) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeLightbox();
-      } else if (e.key === 'ArrowRight') {
-        navigateNext();
-      } else if (e.key === 'ArrowLeft') {
-        navigatePrev();
-      }
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') navigateNext();
+      if (e.key === 'ArrowLeft') navigatePrev();
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -66,121 +57,148 @@ export default function ArchiveSection() {
   }, [selectedStill, currentIndex]);
 
   return (
-    <section id="archive" className="relative w-full py-28 md:py-36 bg-[#080808] text-white border-t border-white/10 overflow-hidden">
-      <div className="w-full px-6 md:px-12 lg:px-16 space-y-16">
-        {/* Section Header: Full Screen Width with scroll flow animation */}
+    <section
+      id="archive"
+      className="relative w-full py-24 md:py-32 bg-[#080808] text-white border-t border-white/10 overflow-hidden font-liber"
+    >
+      <div className="w-full px-6 md:px-12 lg:px-16 space-y-12">
+        {/* Minimal Header */}
         <motion.div
-          initial={{ opacity: 0, y: 35 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-70px" }}
+          viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/10"
         >
-          <div className="space-y-3">
-            <h2 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl tracking-tight text-white">
-              Stills of Today
+          <div className="space-y-2">
+            <span className="text-[11px] font-liber uppercase tracking-[0.2em] text-white/40 block">
+              Optical Monograph
+            </span>
+            <h2 className="font-liber font-black text-4xl sm:text-6xl tracking-tight text-white">
+              Visual <span className="font-liber font-light text-white/70">Archive</span>
             </h2>
           </div>
-          <p className="max-w-md text-sm sm:text-base text-white/60 font-light leading-relaxed">
-            Raw frames, optical experiments, and behind-the-lens documentation captured across Rwanda's landscapes and international film sets.
-          </p>
+
+          {/* Aspect Ratio Filter (Clean text in Liber font) */}
+          <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
+            <button
+              type="button"
+              onClick={() => setActiveAspectFilter('all')}
+              className={`px-3 py-1 text-xs font-liber rounded-full transition-colors ${
+                activeAspectFilter === 'all'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-white/50 hover:text-white'
+              }`}
+            >
+              All Stills
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveAspectFilter('landscape')}
+              className={`px-3 py-1 text-xs font-liber rounded-full transition-colors ${
+                activeAspectFilter === 'landscape'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-white/50 hover:text-white'
+              }`}
+            >
+              Landscape
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveAspectFilter('portrait')}
+              className={`px-3 py-1 text-xs font-liber rounded-full transition-colors ${
+                activeAspectFilter === 'portrait'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-white/50 hover:text-white'
+              }`}
+            >
+              Portrait
+            </button>
+          </div>
         </motion.div>
 
-        {/* Stills Grid: Cards flowing in smoothly on scroll */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ARCHIVE_STILLS.map((still, idx) => (
-            <motion.div
-              key={still.id}
-              initial={{ opacity: 0, y: 35 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, delay: (idx % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              onClick={() => openLightbox(still)}
-              data-cursor="EXPAND"
-              className="group cursor-pointer flex flex-col rounded-xl overflow-hidden bg-[#0e0e0e] border border-white/10 hover:border-white/30 transition-all duration-300"
-            >
-              {/* Still Photo Container */}
-              <div className="relative w-full aspect-[4/3] overflow-hidden bg-black">
-                <img
-                  src={still.imageUrl}
-                  alt={still.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center filter brightness-80 group-hover:brightness-95 group-hover:scale-105 transition-all duration-700 ease-out"
-                />
+        {/* Gallery Masonry Wall with Skeleton Blur Load */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 pt-4">
+          {filteredStills.map((still, idx) => {
+            const isTall = still.aspectRatio === 'portrait';
+            return (
+              <motion.div
+                key={still.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.6, delay: (idx % 4) * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                onClick={() => openLightbox(still)}
+                data-cursor="EXPAND"
+                className="break-inside-avoid group cursor-pointer relative overflow-hidden bg-black border border-white/10 hover:border-white/30 transition-all duration-300"
+              >
+                <div className={`relative w-full ${isTall ? 'aspect-[3/4]' : 'aspect-[16/10]'}`}>
+                  <BlurImage
+                    src={still.imageUrl}
+                    alt={still.title}
+                    priority={idx < 4}
+                    className="group-hover:brightness-105 group-hover:scale-103 transition-all duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity pointer-events-none" />
+                  <div className="absolute inset-0 film-grain pointer-events-none" />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 film-grain pointer-events-none" />
-
-                {/* Top Year Pill (Location removed) */}
-                <div className="absolute top-4 right-4 text-xs font-mono text-white/80">
-                  <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
+                  {/* Corner Year Pill */}
+                  <div className="absolute top-2.5 right-2.5 text-[10px] font-liber text-white/60 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded">
                     {still.year}
-                  </span>
-                </div>
+                  </div>
 
-                {/* Bottom Overlay Title */}
-                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between z-10">
-                  <div className="space-y-0.5 max-w-[80%]">
-                    <span className="text-[10px] font-mono text-white/60 uppercase block">
-                      {still.project}
-                    </span>
-                    <h4 className="font-display font-bold text-base text-white group-hover:text-white/90 truncate">
-                      {still.title}
-                    </h4>
-                  </div>
-                  <div className="p-2 rounded-full bg-white/10 text-white group-hover:bg-white group-hover:text-black transition-colors">
-                    <Maximize2 className="w-3.5 h-3.5" />
+                  {/* Bottom Hover Caption */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
+                    <div className="space-y-0.5 max-w-[85%]">
+                      <span className="text-[10px] font-liber text-white/50 block">
+                        {still.camera}
+                      </span>
+                      <h4 className="font-liber font-semibold text-sm text-white truncate">
+                        {still.title}
+                      </h4>
+                    </div>
+                    <div className="p-1.5 rounded-full bg-white/10 text-white group-hover:bg-white group-hover:text-black transition-colors">
+                      <Maximize2 className="w-3 h-3" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Full View Lightbox Modal */}
+      {/* Full-Screen Pure Minimal Lightbox Modal with Skeleton Blur Load */}
       {selectedStill && (
         <div
           ref={modalScrollRef}
-          className="fixed inset-0 z-50 overflow-y-auto bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300"
+          className="fixed inset-0 z-50 flex flex-col justify-between bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber"
         >
-          {/* Sticky Full View Top Navigation Bar */}
-          <div className="sticky top-0 z-30 w-full bg-[#080808]/90 backdrop-blur-xl border-b border-white/10 px-6 md:px-12 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-xs uppercase tracking-widest text-white/40 hidden sm:inline-block">
-                Stills of Today
-              </span>
-              <span className="text-white/20 hidden sm:inline-block">/</span>
-              <span className="font-mono text-xs text-white/80 tabular-nums">
-                {String(currentIndex + 1).padStart(2, '0')} of {String(ARCHIVE_STILLS.length).padStart(2, '0')}
+          {/* Top Bar */}
+          <div className="w-full px-6 md:px-12 py-5 flex items-center justify-between border-b border-white/10 bg-black/60 backdrop-blur-md">
+            <div className="flex items-center gap-4 text-xs font-liber">
+              <span className="text-white/40 uppercase">Visual Archive</span>
+              <span className="text-white/20">/</span>
+              <span className="text-white font-medium">
+                {selectedStill.title}
               </span>
             </div>
 
-            {/* Middle Quick Info */}
-            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-white/60 truncate max-w-md">
-              <span className="text-white font-medium truncate">{selectedStill.title}</span>
-              <span>·</span>
-              <span className="text-white/40 truncate">{selectedStill.project}</span>
-            </div>
-
-            {/* Right Controls */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 bg-white/5 rounded p-1 border border-white/10">
                 <button
                   type="button"
                   onClick={navigatePrev}
-                  className="p-1.5 rounded text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                  aria-label="Previous still"
-                  title="Previous Still (Left Arrow)"
+                  className="p-1 text-white/60 hover:text-white transition-colors"
+                  aria-label="Previous image"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={navigateNext}
-                  className="p-1.5 rounded text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                  aria-label="Next still"
-                  title="Next Still (Right Arrow)"
+                  className="p-1 text-white/60 hover:text-white transition-colors"
+                  aria-label="Next image"
                 >
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -189,124 +207,45 @@ export default function ArchiveSection() {
               <button
                 type="button"
                 onClick={closeLightbox}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white text-white hover:text-black text-xs font-mono uppercase tracking-wider transition-all duration-200"
-                aria-label="Close full view"
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-colors"
+                aria-label="Close lightbox"
               >
-                <span>Close</span>
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Full View Content Container */}
-          <div className="w-full max-w-6xl mx-auto px-6 md:px-12 py-10 space-y-12">
-            {/* 1. Large Cinematic Image Frame */}
-            <div className="relative w-full rounded-2xl overflow-hidden bg-black border border-white/15 shadow-2xl">
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] flex items-center justify-center bg-zinc-950">
-                <img
-                  src={selectedStill.imageUrl}
-                  alt={selectedStill.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-contain select-none"
-                />
-                <div className="absolute inset-0 film-grain pointer-events-none" />
-              </div>
+          {/* Center Stage: Photo in Full Magnificence with Blur Load */}
+          <div className="flex-1 flex items-center justify-center p-4 sm:p-8 max-h-[75vh]">
+            <BlurImage
+              src={selectedStill.imageUrl}
+              alt={selectedStill.title}
+              priority={true}
+              wrapperClassName="max-h-full max-w-full rounded shadow-2xl bg-transparent"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
 
-              {/* Sub-strip on image: project & year */}
-              <div className="p-4 bg-[#0a0a0a] border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-white/60">
-                <div className="flex items-center gap-4">
-                  <span className="text-white/40">PROJECT: <strong className="text-white font-normal">{selectedStill.project}</strong></span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-white/40">YEAR: <strong className="text-white font-normal">{selectedStill.year}</strong></span>
-                </div>
-              </div>
+          {/* Bottom Bar: Quiet Exif Details */}
+          <div className="w-full px-6 md:px-12 py-5 border-t border-white/10 bg-black/60 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+            <div>
+              <h3 className="font-liber font-semibold text-base text-white">
+                {selectedStill.title}
+              </h3>
+              <p className="text-white/50 font-light mt-0.5">
+                {selectedStill.description}
+              </p>
             </div>
 
-            {/* 2. Title, Project & Full Description */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-2">
-              <div className="lg:col-span-5 space-y-3">
-                <span className="text-xs font-mono uppercase tracking-widest text-white/40 block">
-                  {selectedStill.project}
-                </span>
-                <h3 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
-                  {selectedStill.title}
-                </h3>
+            <div className="flex items-center gap-6 text-[11px] font-liber text-white/60 shrink-0">
+              <div className="flex items-center gap-1.5">
+                <Camera className="w-3.5 h-3.5 text-white/40" />
+                <span>{selectedStill.camera}</span>
               </div>
-
-              <div className="lg:col-span-7 space-y-6">
-                <div className="space-y-3">
-                  <span className="text-xs font-mono uppercase tracking-wider text-white/40 block flex items-center gap-2">
-                    <Film className="w-3.5 h-3.5 text-white" />
-                    <span>Visual Narrative &amp; Context</span>
-                  </span>
-                  <p className="text-base sm:text-lg text-white/80 leading-relaxed font-light">
-                    {selectedStill.description}
-                  </p>
-                </div>
-
-                {selectedStill.backstory && (
-                  <div className="p-5 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
-                    <span className="text-xs font-mono uppercase tracking-wider text-white/50 block">
-                      Behind The Lens · Production Notes
-                    </span>
-                    <p className="text-xs sm:text-sm text-white/60 font-light leading-relaxed italic">
-                      "{selectedStill.backstory}"
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 4. Bottom Link To The Next Still Card (In Full View) */}
-            <div className="pt-12 pb-16 border-t border-white/10 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-widest text-white/40">
-                  Next Still in Stills of Today
-                </span>
-                <span className="text-xs font-mono text-white/40">
-                  {String(nextIndex + 1).padStart(2, '0')} / {String(ARCHIVE_STILLS.length).padStart(2, '0')}
-                </span>
-              </div>
-
-              {/* Clickable Card Linking to Next Still in Full View */}
-              <button
-                type="button"
-                onClick={() => navigateToStill(nextStill)}
-                data-cursor="NEXT"
-                className="group w-full p-6 md:p-8 rounded-2xl bg-[#0e0e0e] hover:bg-[#141414] border border-white/10 hover:border-white/30 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 text-left"
-              >
-                <div className="flex items-center gap-6">
-                  {/* Thumbnail of Next Card */}
-                  <div className="relative w-28 h-20 md:w-36 md:h-24 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black">
-                    <img
-                      src={nextStill.imageUrl}
-                      alt={nextStill.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors" />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-mono text-white/50 uppercase block">
-                      {nextStill.project} · {nextStill.year}
-                    </span>
-                    <h4 className="font-display font-bold text-xl md:text-2xl lg:text-3xl text-white group-hover:text-white/90 transition-colors">
-                      {nextStill.title}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* Arrow Pointing Right Showing Next */}
-                <div className="flex items-center gap-3 shrink-0 self-end md:self-center">
-                  <span className="text-xs font-mono uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
-                    View Next Still
-                  </span>
-                  <div className="w-12 h-12 rounded-full bg-white/5 group-hover:bg-white text-white group-hover:text-black border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:translate-x-1.5 shadow-lg">
-                    <ArrowRight className="w-5 h-5" />
-                  </div>
-                </div>
-              </button>
+              <span>·</span>
+              <span>{selectedStill.lens}</span>
+              <span>·</span>
+              <span>{selectedStill.location}</span>
             </div>
           </div>
         </div>
@@ -314,4 +253,3 @@ export default function ArchiveSection() {
     </section>
   );
 }
-

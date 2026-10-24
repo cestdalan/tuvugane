@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Play, Volume2, VolumeX, ArrowDown, ArrowUpRight } from 'lucide-react';
+import { Volume2, VolumeX, ArrowDown, Play } from 'lucide-react';
 
 interface HeroSectionProps {
   onOpenShowreel: () => void;
@@ -11,11 +11,22 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
   const [isAudioActive, setIsAudioActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Guarantee seamless silent looping autoplay across all browsers
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {
+        // Handled silently by browser policy
+      });
+    }
+  }, []);
+
   const toggleAmbientAudio = () => {
     if (videoRef.current) {
       if (!isAudioActive) {
         videoRef.current.muted = false;
-        videoRef.current.volume = 0.9;
+        videoRef.current.volume = 0.85;
         setIsAudioActive(true);
       } else {
         videoRef.current.muted = true;
@@ -29,9 +40,9 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
   return (
     <section
       id="hero"
-      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden bg-black text-white"
+      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden bg-black text-white font-liber"
     >
-      {/* 1. Cinematic Background Video */}
+      {/* 1. Subtle, Looping Silent Cinematic Background Video */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <video
           ref={videoRef}
@@ -39,8 +50,10 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
           muted
           loop
           playsInline
+          disablePictureInPicture
+          preload="auto"
           poster="/assets/aistudio/new_1_2f61cc23.jpg"
-          className="w-full h-full object-cover object-center scale-105 opacity-60 transition-opacity duration-1000"
+          className="w-full h-full object-cover object-center scale-105 opacity-50 transition-opacity duration-1000"
         >
           <source
             src="/assets/aistudio/Discover_Hidden_African_Villages_A_Cinematic_Teaser_5481f979.mp4"
@@ -49,16 +62,37 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
         </video>
 
         {/* Ambient Film Grain & Vignette Scrims */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-[#050505]/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/45 to-[#050505]/75" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_90%)]" />
         <div className="absolute inset-0 film-grain pointer-events-none" />
       </div>
 
       {/* Spacer for Top Header */}
-      <div className="h-24 md:h-32" />
+      <div className="h-28 md:h-36" />
 
-      {/* 2. Main Editorial Hero Copy: Words flowing in gracefully */}
-      <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 my-auto py-12 md:py-20">
+      {/* 2. Central Play Reel Trigger */}
+      <div className="relative z-10 flex flex-col items-center justify-center my-auto py-8">
+        <motion.button
+          type="button"
+          onClick={onOpenShowreel}
+          data-cursor="PLAY"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="group flex flex-col items-center gap-3 cursor-pointer focus-visible:outline-none"
+          aria-label="Play Studio Showreel"
+        >
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-white/30 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:border-white group-hover:bg-white/10 backdrop-blur-sm shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <Play className="w-6 h-6 text-white fill-white ml-0.5 transition-transform duration-300 group-hover:scale-105" />
+          </div>
+          <span className="text-[11px] font-liber font-bold uppercase tracking-[0.25em] text-white/60 group-hover:text-white transition-colors">
+            Watch Reel
+          </span>
+        </motion.button>
+      </div>
+
+      {/* 3. Hero Bottom Editorial Title & Meta in Pure Liber Font */}
+      <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 pb-12 pt-6">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -66,135 +100,91 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
             hidden: { opacity: 0 },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+              transition: { staggerChildren: 0.12, delayChildren: 0.1 },
             },
           }}
-          className="max-w-4xl space-y-6"
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/10 pb-8"
         >
-          {/* Ultra-Bold Editorial Headline flowing in */}
-          <motion.h1
-            variants={{
-              hidden: { opacity: 0, y: 40 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
-            }}
-            className="font-display font-extrabold text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-[0.93] text-white"
-          >
-            We tell stories.
-          </motion.h1>
+          <div className="space-y-4">
+            <motion.p
+              variants={{
+                hidden: { opacity: 0, y: 15 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+              }}
+              className="text-xs font-liber font-semibold uppercase tracking-[0.25em] text-white/50"
+            >
+              Film &amp; Visual Studio
+            </motion.p>
 
-          {/* Editorial Subtitle */}
-          <motion.p
-            variants={{
-              hidden: { opacity: 0, y: 30 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-            }}
-            className="font-display font-medium text-lg sm:text-2xl text-white/80 tracking-wide"
-          >
-            Film <span className="text-white/30">·</span> Commercials <span className="text-white/30">·</span> Motion Design
-          </motion.p>
+            <motion.h1
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              className="font-liber font-black text-5xl sm:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-[0.92] text-white"
+            >
+              We tell <br />
+              <span className="font-liber font-light text-white/80">stories.</span>
+            </motion.h1>
+          </div>
 
-          <motion.p
-            variants={{
-              hidden: { opacity: 0, y: 25 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-            }}
-            className="max-w-xl text-sm sm:text-base text-white/60 leading-relaxed font-sans font-light"
-          >
-            An elite creative film and motion design studio headquartered in Kigali. Rooted in authentic human truth, crafted with large-format cinema glass and avant-garde kinetic direction.
-          </motion.p>
-
-          {/* Dual Action Buttons */}
           <motion.div
             variants={{
               hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
             }}
-            className="pt-4 flex flex-wrap items-center gap-4"
+            className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-10 text-xs font-liber text-white/60"
           >
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-white/40 block font-semibold">Medium</span>
+              <span className="text-white/80 font-medium">35mm Cinema · Motion Craft</span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-white/40 block font-semibold">Origin</span>
+              <span className="text-white/80 font-medium">Rwanda</span>
+            </div>
             <button
               type="button"
               onClick={() => onNavigate('work')}
-              data-cursor="WORK"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-white text-black font-semibold text-sm rounded-full hover:bg-white/90 transition-all duration-200 shadow-[0_4px_25px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98"
+              data-cursor="GALLERY"
+              className="inline-flex items-center gap-2 text-xs font-liber font-bold uppercase tracking-wider text-white hover:text-white/70 transition-colors pt-2 sm:pt-0"
             >
-              <span>Explore Work</span>
-              <ArrowDown className="w-4 h-4" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onNavigate('contact')}
-              data-cursor="CONTACT"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-white/10 hover:bg-white/15 text-white font-medium text-sm rounded-full border border-white/20 hover:border-white/40 transition-all duration-200 active:scale-98"
-            >
-              <span>Get In Touch</span>
-              <ArrowUpRight className="w-4 h-4 text-white/70" />
+              <span>Explore Gallery</span>
+              <ArrowDown className="w-3.5 h-3.5" />
             </button>
           </motion.div>
         </motion.div>
-      </div>
 
-      {/* 3. Hero Bottom Control Bar: Full-Width */}
-      <div className="relative z-10 w-full border-t border-white/10 bg-black/40 backdrop-blur-md">
-        <div className="w-full px-6 md:px-12 lg:px-16 py-4 flex items-center justify-between">
-          {/* Audio Toggle with pure white equalizer bars */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleAmbientAudio}
-              data-cursor="SOUND"
-              className="group flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono transition-colors"
-              aria-label={isAudioActive ? 'Mute ambient sound' : 'Enable ambient sound'}
-            >
-              {isAudioActive ? (
-                <Volume2 className="w-3.5 h-3.5 text-white" />
-              ) : (
-                <VolumeX className="w-3.5 h-3.5 text-white/40" />
-              )}
-              <span className="text-white/70 group-hover:text-white">
-                {isAudioActive ? 'Sound On' : 'Sound Off'}
-              </span>
-
-              {/* Animated sound wave bars in crisp pure white */}
-              {isAudioActive && (
-                <div className="flex items-center gap-0.5 ml-1">
-                  <span className="w-0.5 h-2.5 bg-white animate-pulse" />
-                  <span className="w-0.5 h-3.5 bg-white animate-pulse delay-75" />
-                  <span className="w-0.5 h-1.5 bg-white animate-pulse delay-150" />
-                </div>
-              )}
-            </button>
-          </div>
-
-          {/* Animated vertical scroll indicator */}
+        {/* 4. Controls Strip: Sound */}
+        <div className="pt-4 flex items-center justify-between text-xs font-liber text-white/50">
           <button
             type="button"
-            onClick={() => onNavigate('work')}
-            data-cursor="SCROLL"
-            className="hidden sm:flex flex-col items-center gap-1.5 text-[11px] font-mono tracking-widest text-white/50 hover:text-white transition-colors"
+            onClick={toggleAmbientAudio}
+            data-cursor="SOUND"
+            className="group flex items-center gap-2.5 py-1 text-xs hover:text-white transition-colors"
+            aria-label={isAudioActive ? 'Mute ambient sound' : 'Enable ambient sound'}
           >
-            <span>SCROLL</span>
-            <div className="w-px h-6 bg-gradient-to-b from-white/70 via-white/20 to-transparent relative overflow-hidden">
-              <span className="absolute top-0 left-0 w-full h-2 bg-white animate-bounce" />
-            </div>
+            {isAudioActive ? (
+              <Volume2 className="w-3.5 h-3.5 text-white" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 text-white/40" />
+            )}
+            <span className="text-white/60 group-hover:text-white font-semibold">
+              {isAudioActive ? 'Sound On' : 'Sound Off'}
+            </span>
+
+            {isAudioActive && (
+              <div className="flex items-center gap-0.5 ml-1">
+                <span className="w-0.5 h-3 bg-white animate-pulse" />
+                <span className="w-0.5 h-4 bg-white animate-pulse [animation-delay:150ms]" />
+                <span className="w-0.5 h-2 bg-white animate-pulse [animation-delay:300ms]" />
+              </div>
+            )}
           </button>
 
-          {/* Showreel Button triggering in-page video player modal */}
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={onOpenShowreel}
-              data-cursor="PLAY"
-              className="group flex items-center gap-2.5 px-4 py-2 bg-white/10 hover:bg-white text-white hover:text-black rounded-full border border-white/20 hover:border-white transition-all duration-200"
-            >
-              <div className="w-4 h-4 rounded-full bg-white group-hover:bg-black text-black group-hover:text-white flex items-center justify-center transition-colors">
-                <Play className="w-2.5 h-2.5 fill-current translate-x-0.2" />
-              </div>
-              <span className="text-xs font-semibold tracking-wider uppercase">
-                Showreel (2:04)
-              </span>
-            </button>
-          </div>
+          <span className="text-[11px] text-white/40 tracking-wider hidden sm:inline-block font-mono">
+            -01°57' S · 30°03' E
+          </span>
         </div>
       </div>
     </section>
