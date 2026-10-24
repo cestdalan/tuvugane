@@ -1,14 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Volume2, VolumeX, ArrowDown, Play } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 
 interface HeroSectionProps {
-  onOpenShowreel: () => void;
+  onOpenShowreel?: () => void;
   onNavigate: (sectionId: string) => void;
 }
 
-export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionProps) {
-  const [isAudioActive, setIsAudioActive] = useState(false);
+export default function HeroSection({ onNavigate }: HeroSectionProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Guarantee seamless silent looping autoplay across all browsers
@@ -21,21 +20,6 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
       });
     }
   }, []);
-
-  const toggleAmbientAudio = () => {
-    if (videoRef.current) {
-      if (!isAudioActive) {
-        videoRef.current.muted = false;
-        videoRef.current.volume = 0.85;
-        setIsAudioActive(true);
-      } else {
-        videoRef.current.muted = true;
-        setIsAudioActive(false);
-      }
-    } else {
-      setIsAudioActive(!isAudioActive);
-    }
-  };
 
   return (
     <section
@@ -71,7 +55,7 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
       <div className="h-28 md:h-36" />
 
       {/* Hero Bottom Editorial Title & Meta in Pure Liber Font */}
-      <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 pb-12 pt-6">
+      <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 pb-14 md:pb-16 pt-6">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -79,12 +63,13 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
             hidden: { opacity: 0 },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+              transition: { staggerChildren: 0.15, delayChildren: 0.2 },
             },
           }}
-          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-white/10 pb-8"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-8"
         >
-          <div className="space-y-4">
+          {/* Main Headline */}
+          <div className="space-y-3 max-w-4xl">
             <motion.p
               variants={{
                 hidden: { opacity: 0, y: 15 },
@@ -125,34 +110,6 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
             </button>
           </motion.div>
         </motion.div>
-
-        {/* 4. Controls Strip: Sound */}
-        <div className="pt-4 flex items-center justify-between text-xs font-liber text-white/50">
-          <button
-            type="button"
-            onClick={toggleAmbientAudio}
-            data-cursor="SOUND"
-            className="group flex items-center gap-2.5 py-1 text-xs hover:text-white transition-colors"
-            aria-label={isAudioActive ? 'Mute ambient sound' : 'Enable ambient sound'}
-          >
-            {isAudioActive ? (
-              <Volume2 className="w-3.5 h-3.5 text-white" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 text-white/40" />
-            )}
-            <span className="text-white/60 group-hover:text-white font-semibold">
-              {isAudioActive ? 'Sound On' : 'Sound Off'}
-            </span>
-
-            {isAudioActive && (
-              <div className="flex items-center gap-0.5 ml-1">
-                <span className="w-0.5 h-3 bg-white animate-pulse" />
-                <span className="w-0.5 h-4 bg-white animate-pulse [animation-delay:150ms]" />
-                <span className="w-0.5 h-2 bg-white animate-pulse [animation-delay:300ms]" />
-              </div>
-            )}
-          </button>
-        </div>
       </div>
     </section>
   );
