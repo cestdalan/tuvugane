@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -9,11 +9,28 @@ interface NavigationProps {
 
 export default function Navigation({ activeSection, onNavigate }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      setIsScrolled(currentScrollY > 20);
+
+      // Always show at top of page
+      if (currentScrollY <= 60) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollYRef.current + 8) {
+        // Scrolling DOWN -> hide navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollYRef.current - 8) {
+        // Scrolling UP -> reveal navbar
+        setIsVisible(true);
+      }
+
+      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -49,6 +66,10 @@ export default function Navigation({ activeSection, onNavigate }: NavigationProp
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out w-full ${
+          isVisible || isMobileMenuOpen
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-full opacity-0 pointer-events-none'
+        } ${
           isScrolled
             ? 'bg-[#050505]/95 backdrop-blur-xl border-b border-white/10 py-4 shadow-2xl'
             : 'bg-gradient-to-b from-black/90 via-black/40 to-transparent py-5 sm:py-6'

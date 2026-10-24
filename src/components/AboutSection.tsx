@@ -375,8 +375,8 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                   initial={{ rotateY: 0 }}
                   animate={{ rotateY: -180 }}
                   transition={{
-                    duration: 0.85,
-                    ease: [0.4, 0, 0.2, 1],
+                    duration: 0.45,
+                    ease: [0.25, 1, 0.5, 1],
                   }}
                   onAnimationComplete={onFlipComplete}
                   className="absolute top-0 right-0 w-1/2 h-full z-40"
@@ -397,8 +397,8 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                     {/* Natural curvature shadow that darkens as paper bends */}
                     <motion.div
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.75 }}
-                      transition={{ duration: 0.42 }}
+                      animate={{ opacity: 0.7 }}
+                      transition={{ duration: 0.22 }}
                       className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent pointer-events-none"
                     />
                   </div>
@@ -415,9 +415,9 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                     {renderHalfMedia(nextMedia, 'left')}
                     {/* Shadow fades as page lays flat on left side */}
                     <motion.div
-                      initial={{ opacity: 0.75 }}
+                      initial={{ opacity: 0.7 }}
                       animate={{ opacity: 0 }}
-                      transition={{ duration: 0.43, delay: 0.42 }}
+                      transition={{ duration: 0.23, delay: 0.22 }}
                       className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/30 to-transparent pointer-events-none"
                     />
                   </div>
@@ -430,8 +430,8 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                   initial={{ rotateY: 0 }}
                   animate={{ rotateY: 180 }}
                   transition={{
-                    duration: 0.85,
-                    ease: [0.4, 0, 0.2, 1],
+                    duration: 0.45,
+                    ease: [0.25, 1, 0.5, 1],
                   }}
                   onAnimationComplete={onFlipComplete}
                   className="absolute top-0 left-0 w-1/2 h-full z-40"
@@ -451,8 +451,8 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                     {renderHalfMedia(currentMedia, 'left')}
                     <motion.div
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.75 }}
-                      transition={{ duration: 0.42 }}
+                      animate={{ opacity: 0.7 }}
+                      transition={{ duration: 0.22 }}
                       className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/40 to-transparent pointer-events-none"
                     />
                   </div>
@@ -468,9 +468,9 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
                   >
                     {renderHalfMedia(prevMedia, 'right')}
                     <motion.div
-                      initial={{ opacity: 0.75 }}
+                      initial={{ opacity: 0.7 }}
                       animate={{ opacity: 0 }}
-                      transition={{ duration: 0.43, delay: 0.42 }}
+                      transition={{ duration: 0.23, delay: 0.22 }}
                       className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/30 to-transparent pointer-events-none"
                     />
                   </div>
