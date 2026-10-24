@@ -1,180 +1,153 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, ChevronLeft, ChevronRight, Play, Pause, BookOpen, Volume2, VolumeX, Maximize2, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import BlurImage from './BlurImage';
 
 interface AboutSectionProps {
   onNavigate: (sectionId: string) => void;
 }
 
-interface BookPage {
+interface PageMedia {
   id: string;
-  chapter: string;
-  title: string;
-  type: 'video' | 'photo' | 'dual';
-  mediaUrl: string;
-  secondaryMediaUrl?: string;
-  quote: string;
-  location: string;
-  technical: string;
-  notes: string;
-  directorNotes: string;
+  type: 'video' | 'photo';
+  url: string;
+  alt: string;
 }
 
-const STUDIO_PAGES: BookPage[] = [
+interface BookSpread {
+  id: string;
+  left: PageMedia;
+  right: PageMedia;
+}
+
+const BOOK_SPREADS: BookSpread[] = [
   {
-    id: 'b1',
-    chapter: 'Ch. 01 — Cinematic Overture',
-    title: 'Hidden African Villages',
-    type: 'video',
-    mediaUrl: '/assets/aistudio/Discover_Hidden_African_Villages_A_Cinematic_Teaser_5481f979.mp4',
-    secondaryMediaUrl: '/assets/aistudio/new_1_2f61cc23.webp',
-    quote: 'Cinema is the preservation of ancestral breath across light and shadow.',
-    location: 'Northern Province & Nyabarongo, Rwanda',
-    technical: 'Arri Alexa Mini LF · Cooke Anamorphic 40mm · 24fps',
-    notes: 'A quiet observational odyssey documenting the mist-shrouded valley hills at dawn.',
-    directorNotes: 'We waited three mornings for the fog to settle precisely along the water canal.',
+    id: 'spread-1',
+    left: {
+      id: 'm1',
+      type: 'video',
+      url: '/assets/aistudio/Discover_Hidden_African_Villages_A_Cinematic_Teaser_5481f979.mp4',
+      alt: 'Cinematic Teaser Reel',
+    },
+    right: {
+      id: 'm2',
+      type: 'photo',
+      url: '/assets/aistudio/trn_staff3_3_5b9708db.webp',
+      alt: 'Production Crew on Set',
+    },
   },
   {
-    id: 'b2',
-    chapter: 'Ch. 02 — The Collective',
-    title: 'Studio Crew in Field',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/trn_staff3_3_5b9708db.webp',
-    secondaryMediaUrl: '/assets/aistudio/MSG01932_1_d0a10631.webp',
-    quote: 'Every frame is built on shared trust and silent synchronization.',
-    location: 'Kigali Studio & Production Base',
-    technical: 'Red V-Raptor 8K · 35mm Prime · Natural Daylight',
-    notes: 'The core cinematography and grip team during principal production in Kacyiru.',
-    directorNotes: 'The energy of a Rwandan set is communal. Stories belong to everyone in the circle.',
+    id: 'spread-2',
+    left: {
+      id: 'm3',
+      type: 'photo',
+      url: '/assets/aistudio/1_The_Dawn_Crossing_b4f87c17.webp',
+      alt: 'The Dawn Crossing',
+    },
+    right: {
+      id: 'm4',
+      type: 'photo',
+      url: '/assets/aistudio/5_The_Pillars_of_Tomorrow_3f536592.webp',
+      alt: 'Pillars of Tomorrow',
+    },
   },
   {
-    id: 'b3',
-    chapter: 'Ch. 03 — First Light',
-    title: 'The Dawn Crossing',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/1_The_Dawn_Crossing_b4f87c17.webp',
-    quote: 'Water carries voices further than dry land ever could.',
-    location: 'Nyabarongo River Basin',
-    technical: 'Arri Alexa Mini LF · 50mm T1.5 · 1/48s 800 ISO',
-    notes: 'Hand-carved wooden canoes navigating river bends at 05:40 AM.',
-    directorNotes: 'No artificial reflectors used. The sky gradient did all the sculpting.',
+    id: 'spread-3',
+    left: {
+      id: 'm5',
+      type: 'photo',
+      url: '/assets/aistudio/ASP_ANITHA_70_51cb7ec8.webp',
+      alt: 'Portrait of Anitha',
+    },
+    right: {
+      id: 'm6',
+      type: 'photo',
+      url: '/assets/aistudio/INK08776_806fd592.webp',
+      alt: 'Agaseke Weave Study',
+    },
   },
   {
-    id: 'b4',
-    chapter: 'Ch. 04 — Modern Monuments',
-    title: 'Pillars of Tomorrow',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/5_The_Pillars_of_Tomorrow_3f536592.webp',
-    quote: 'Concrete and sun forming sculptural geometry across the skyline.',
-    location: 'Kigali Financial District',
-    technical: 'Sony FX9 · 24-70mm G Master · Circular Polarizer',
-    notes: 'Architectural kinetic direction exploring urban transformation in contemporary Africa.',
-    directorNotes: 'High-contrast monochrome framing emphasizing vertical aspiration.',
+    id: 'spread-4',
+    left: {
+      id: 'm7',
+      type: 'photo',
+      url: '/assets/aistudio/dukunde_kawa_17_9888532a.webp',
+      alt: 'Dukunde Kawa Harvest',
+    },
+    right: {
+      id: 'm8',
+      type: 'photo',
+      url: '/assets/aistudio/iMpakanizi_66_b411b2d2.webp',
+      alt: 'Impakanizi Monoliths',
+    },
   },
   {
-    id: 'b5',
-    chapter: 'Ch. 05 — Human Intimacy',
-    title: 'Chiaroscuro Study: Anitha',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/ASP_ANITHA_70_51cb7ec8.webp',
-    quote: 'The human face is the most demanding landscape in cinematography.',
-    location: 'Studio Stage 1, Kigali',
-    technical: 'Hasselblad H6D-100c · 100mm f/2.2 · Single Key Light',
-    notes: 'Exploring sculptural shadows on African skin tones with true color fidelity.',
-    directorNotes: 'Captured with zero diffusion filters to preserve textural realism.',
+    id: 'spread-5',
+    left: {
+      id: 'm9',
+      type: 'photo',
+      url: '/assets/aistudio/MSG01940_1_783cf665.webp',
+      alt: 'The Handshake at the Canal',
+    },
+    right: {
+      id: 'm10',
+      type: 'photo',
+      url: '/assets/aistudio/MSG01932_1_d0a10631.webp',
+      alt: 'Morning Shift with Tools',
+    },
   },
   {
-    id: 'b6',
-    chapter: 'Ch. 06 — Living Heritage',
-    title: 'Agaseke Geometric Weave',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/INK08776_806fd592.webp',
-    quote: 'Patterns passed down through four hundred years of mathematical intuition.',
-    location: 'Nyanza Royal Heritage Center',
-    technical: 'Arri Amira · Zeiss Supreme Prime 65mm',
-    notes: 'Close-up macro cinematography celebrating the spiral architecture of traditional basketry.',
-    directorNotes: 'The rhythm of weaving mirrors the pacing of a cinematic sequence.',
-  },
-  {
-    id: 'b7',
-    chapter: 'Ch. 07 — The High Lands',
-    title: 'Dukunde Kawa Harvest',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/dukunde_kawa_17_9888532a.webp',
-    quote: 'High altitude volcanic soil yields the purest red cherries on the continent.',
-    location: 'Gakenke District, Northern Province',
-    technical: 'Canon C500 Mk II · Canon Cinema Prime 24mm',
-    notes: 'Agricultural documentary chronicling fair-trade coffee washing stations at 2,000 meters.',
-    directorNotes: 'Filming in highland mist requires continuous lens temperature acclimation.',
-  },
-  {
-    id: 'b8',
-    chapter: 'Ch. 08 — Spatial Presence',
-    title: 'Impakanizi Monoliths',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/iMpakanizi_66_b411b2d2.webp',
-    quote: 'Form and silence speaking directly to the sky.',
-    location: 'Eastern Savanna Outskirts',
-    technical: 'Red Monstro 8K VV · Leica Summilux-C 35mm',
-    notes: 'Experimental spatial motion study commissioned for the Venice Biennale pavilion.',
-    directorNotes: 'We matched the camera tracking speed to the exact shadow movement across the stone.',
-  },
-  {
-    id: 'b9',
-    chapter: 'Ch. 09 — The Pact',
-    title: 'The Handshake at the Canal',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/MSG01940_1_783cf665.webp',
-    quote: 'Agreements sealed not in ink, but in shared labor under the sun.',
-    location: 'Nyabarongo Irrigation Works',
-    technical: 'Arri Alexa Mini LF · Cooke Anamorphic 85mm',
-    notes: 'Narrative still from our award-winning dramatic short film on rural cooperatives.',
-    directorNotes: 'A gesture repeated a thousand times, elevated into myth through framing.',
-  },
-  {
-    id: 'b10',
-    chapter: 'Ch. 10 — The Procession',
-    title: 'Morning Shift with Tools',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/MSG01932_1_d0a10631.webp',
-    quote: 'Work as choreography. Tools as extensions of memory.',
-    location: 'Bugesera Plains',
-    technical: 'Cooke Speed Panchro 50mm · T2.3 · 500T Kodak Stock',
-    notes: 'Procession study analyzing group cadence and naturalistic motion blur.',
-    directorNotes: 'Tracking shot executed on an unpaved ridge with an improvised rickshaw rig.',
-  },
-  {
-    id: 'b11',
-    chapter: 'Ch. 11 — The Horizon',
-    title: 'Valley March',
-    type: 'photo',
-    mediaUrl: '/assets/aistudio/new_1_2f61cc23.webp',
-    quote: 'Looking forward into the boundless African morning.',
-    location: 'Akagera Basin Valley',
-    technical: 'Arri Alexa 65 · Hasselblad Prime 28mm',
-    notes: 'The concluding panorama of our monograph, capturing endless undulating hills.',
-    directorNotes: 'Rwanda is called the Land of a Thousand Hills for this exact unending vista.',
+    id: 'spread-6',
+    left: {
+      id: 'm11',
+      type: 'photo',
+      url: '/assets/aistudio/new_1_2f61cc23.webp',
+      alt: 'Valley March',
+    },
+    right: {
+      id: 'm12',
+      type: 'video',
+      url: '/assets/aistudio/Discover_Hidden_African_Villages_A_Cinematic_Teaser_5481f979.mp4',
+      alt: 'Cinematic Motion Sequence',
+    },
   },
 ];
 
 export default function AboutSection({ onNavigate }: AboutSectionProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlayingVideo, setIsPlayingVideo] = useState(true);
+  const [currentSpreadIndex, setCurrentSpreadIndex] = useState(0);
+  const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
+  const [isFlipping, setIsFlipping] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [isAutoPlayPages, setIsAutoPlayPages] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const totalPages = STUDIO_PAGES.length;
-  const currentSpread = STUDIO_PAGES[currentIndex];
+  const totalSpreads = BOOK_SPREADS.length;
+  const currentSpread = BOOK_SPREADS[currentSpreadIndex];
+
+  const nextIndex = (currentSpreadIndex + 1) % totalSpreads;
+  const prevIndex = (currentSpreadIndex - 1 + totalSpreads) % totalSpreads;
+
+  const nextSpread = BOOK_SPREADS[nextIndex];
+  const prevSpread = BOOK_SPREADS[prevIndex];
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalPages);
+    if (isFlipping) return;
+    setFlipDirection('next');
+    setIsFlipping(true);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
+    if (isFlipping) return;
+    setFlipDirection('prev');
+    setIsFlipping(true);
+  };
+
+  const onFlipComplete = () => {
+    if (flipDirection === 'next') {
+      setCurrentSpreadIndex(nextIndex);
+    } else if (flipDirection === 'prev') {
+      setCurrentSpreadIndex(prevIndex);
+    }
+    setFlipDirection(null);
+    setIsFlipping(false);
   };
 
   // Keyboard navigation
@@ -185,23 +158,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Optional auto-slideshow
-  useEffect(() => {
-    if (!isAutoPlayPages) return;
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5500);
-    return () => clearInterval(interval);
-  }, [isAutoPlayPages]);
-
-  // Video playback synchronization when active page changes
-  useEffect(() => {
-    if (currentSpread.type === 'video' && videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
-  }, [currentIndex, currentSpread.type]);
+  }, [isFlipping, currentSpreadIndex]);
 
   const specs = [
     { label: 'Origin', value: 'Kigali, Rwanda' },
@@ -209,6 +166,46 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
     { label: 'Pipeline', value: '8K LF & 35mm' },
     { label: 'Festival Laurels', value: '24+' },
   ];
+
+  const renderMedia = (media: PageMedia, isPriority = false) => {
+    if (media.type === 'video') {
+      return (
+        <div className="relative w-full h-full overflow-hidden bg-black">
+          <video
+            src={media.url}
+            autoPlay
+            muted={isMuted}
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMuted(!isMuted);
+            }}
+            className="absolute bottom-4 left-4 z-20 p-2 rounded-full bg-black/70 hover:bg-white text-white hover:text-black border border-white/20 transition-colors"
+            title={isMuted ? 'Unmute' : 'Mute'}
+            aria-label="Toggle mute"
+          >
+            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-black">
+        <BlurImage
+          src={media.url}
+          alt={media.alt}
+          priority={isPriority}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  };
 
   return (
     <section
@@ -251,226 +248,194 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
           </div>
         </motion.div>
 
-        {/* 3D BOOK EFFECT MONOGRAPH CAROUSEL (Matched from video) */}
+        {/* 3D BOOK WITH REALISTIC PAGE-TURNING FLIP ANIMATION */}
         <div className="relative w-full flex flex-col items-center">
-          {/* Book Header Title & Page Counter matching video */}
-          <div className="text-center space-y-2 pb-8 sm:pb-12 z-20">
-            <div className="flex items-center justify-center gap-2 text-xs font-liber uppercase tracking-[0.25em] text-white/40">
-              <BookOpen className="w-3.5 h-3.5 text-white/60" />
-              <span>Studio Monograph</span>
-            </div>
-            <h3 className="font-liber font-black text-2xl sm:text-4xl text-white tracking-tight">
-              Production Journal
-            </h3>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 font-mono">
-              <Sparkles className="w-3 h-3 text-white/70" />
-              <span>{totalPages} Chapters · Films &amp; Stills</span>
-            </div>
-          </div>
-
-          {/* 3D Curved Perspective Carousel Stage */}
+          {/* Main Book Stage Container with Perspective */}
           <div
-            ref={carouselRef}
-            className="relative w-full h-[460px] sm:h-[540px] md:h-[620px] flex items-center justify-center overflow-visible"
+            className="relative w-full max-w-5xl h-[340px] sm:h-[460px] md:h-[540px] lg:h-[600px] flex items-center justify-center select-none"
             style={{
-              perspective: '1400px',
-              perspectiveOrigin: 'center center',
+              perspective: '2000px',
             }}
           >
-            {/* Ambient Deep Floor Shadow beneath the active book */}
-            <div className="absolute bottom-6 w-[80%] max-w-2xl h-16 bg-black/80 blur-3xl rounded-full pointer-events-none transform scale-y-50" />
+            {/* Soft Ambient Shadow on Floor beneath the Open Book */}
+            <div className="absolute -bottom-6 w-[86%] h-16 bg-black/90 blur-2xl rounded-full pointer-events-none transform scale-y-50" />
 
-            {STUDIO_PAGES.map((page, idx) => {
-              // Calculate relative offset from center
-              let offset = idx - currentIndex;
-              // Wrap around for seamless infinite carousel
-              if (offset > totalPages / 2) offset -= totalPages;
-              if (offset < -totalPages / 2) offset += totalPages;
+            {/* The Open Book Body (Two Pages: Left Half & Right Half) */}
+            <div
+              className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0d0d10] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex"
+              style={{
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {/* STATIC BASE LAYER */}
+              {/* 1. Left Page (Underneath / Static) */}
+              <div
+                onClick={handlePrev}
+                data-cursor="PREV PAGE"
+                className="w-1/2 h-full relative overflow-hidden border-r border-black/40 cursor-pointer"
+              >
+                {flipDirection === 'prev'
+                  ? renderMedia(prevSpread.left)
+                  : renderMedia(currentSpread.left, true)}
 
-              const isCenter = offset === 0;
-              const isVisible = Math.abs(offset) <= 3;
+                {/* Left Page Book Crease Shading */}
+                <div className="absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-black/60 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-black/10 pointer-events-none z-10" />
+              </div>
 
-              if (!isVisible) return null;
+              {/* 2. Right Page (Underneath / Static: Unfolds as top page flips away) */}
+              <div
+                onClick={handleNext}
+                data-cursor="NEXT PAGE"
+                className="w-1/2 h-full relative overflow-hidden border-l border-black/40 cursor-pointer"
+              >
+                {flipDirection === 'next'
+                  ? renderMedia(nextSpread.right)
+                  : renderMedia(currentSpread.right, true)}
 
-              // 3D positioning on cylindrical arc (like in the video)
-              const translateX = offset * 48; // percentage translate
-              const translateZ = -Math.abs(offset) * 150; // push backwards
-              const rotateY = -offset * 32; // rotate toward center
-              const scale = Math.max(0.65, 1 - Math.abs(offset) * 0.12);
-              const opacity = Math.max(0.2, 1 - Math.abs(offset) * 0.28);
-              const zIndex = 30 - Math.abs(offset);
+                {/* Right Page Book Crease Shading */}
+                <div className="absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-black/10 pointer-events-none z-10" />
+              </div>
 
-              return (
-                <div
-                  key={page.id}
-                  onClick={() => setCurrentIndex(idx)}
-                  className={`absolute w-[92%] sm:w-[82%] md:w-[72%] max-w-3xl h-[400px] sm:h-[480px] md:h-[540px] cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none ${
-                    isCenter ? 'pointer-events-auto' : 'pointer-events-auto hover:brightness-125'
-                  }`}
+              {/* Center Spine Crease Line */}
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 sm:w-12 bg-gradient-to-r from-black/50 via-black/90 to-black/50 z-20 pointer-events-none" />
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-white/20 z-20 pointer-events-none" />
+
+              {/* DYNAMIC TURNING LEAF (Bends and flips like an authentic book page) */}
+              {/* FORWARD FLIP: Right Page bends in half along center spine and turns left */}
+              {flipDirection === 'next' && (
+                <motion.div
+                  initial={{ rotateY: 0 }}
+                  animate={{ rotateY: -180 }}
+                  transition={{
+                    duration: 0.85,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  onAnimationComplete={onFlipComplete}
+                  className="absolute top-0 right-0 w-1/2 h-full z-30"
                   style={{
-                    transform: `translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-                    zIndex,
-                    opacity,
+                    transformOrigin: 'left center',
                     transformStyle: 'preserve-3d',
                   }}
                 >
-                  {/* The Physical Open Book Spread */}
+                  {/* Front of Turning Page (Current Right Page, folding toward left) */}
                   <div
-                    className={`w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#121214] border border-white/15 relative flex shadow-[0_30px_70px_rgba(0,0,0,0.85)] ${
-                      isCenter ? 'ring-1 ring-white/20' : ''
-                    }`}
+                    className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                    style={{
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
                   >
-                    {/* Authentic Center Spine Crease / Fold Shadow */}
-                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 sm:w-12 bg-gradient-to-r from-black/40 via-black/80 to-black/40 z-30 pointer-events-none" />
-                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-white/10 z-30 pointer-events-none" />
-
-                    {/* Paper Texture & Grain */}
-                    <div className="absolute inset-0 film-grain opacity-40 pointer-events-none z-20" />
-
-                    {/* LEFT PAGE OF THE SPREAD: Main Visual (Video or High-Res Photo) */}
-                    <div className="w-1/2 h-full relative overflow-hidden bg-black flex flex-col justify-between border-r border-white/5">
-                      {page.type === 'video' ? (
-                        <div className="relative w-full h-full overflow-hidden bg-black">
-                          <video
-                            ref={isCenter ? videoRef : undefined}
-                            src={page.mediaUrl}
-                            autoPlay={isCenter}
-                            muted={isMuted}
-                            loop
-                            playsInline
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Video Play/Audio badges on book page */}
-                          <div className="absolute top-3 left-3 z-30 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[10px] font-liber text-white">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            <span>Motion Reel</span>
-                          </div>
-
-                          {isCenter && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIsMuted(!isMuted);
-                              }}
-                              className="absolute bottom-3 left-3 z-30 p-2 rounded-full bg-black/70 hover:bg-white text-white hover:text-black border border-white/20 transition-colors"
-                              title={isMuted ? 'Unmute video' : 'Mute video'}
-                              aria-label="Toggle audio"
-                            >
-                              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="relative w-full h-full overflow-hidden bg-black">
-                          <BlurImage
-                            src={page.mediaUrl}
-                            alt={page.title}
-                            priority={isCenter}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Photo Corner Tag */}
-                          <div className="absolute top-3 left-3 z-20 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-liber font-medium text-white/80 border border-white/10">
-                            Frame 0{idx + 1}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Subtle Vignette on Left Page edge */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/40 pointer-events-none z-10" />
-                    </div>
-
-                    {/* RIGHT PAGE OF THE SPREAD: Journal Notes, Diary, Quotes & Tech Details */}
-                    <div className="w-1/2 h-full bg-[#161619] p-4 sm:p-6 md:p-8 flex flex-col justify-between text-white relative z-10 overflow-y-auto">
-                      {/* Top Header of Page */}
-                      <div className="space-y-2 border-b border-white/10 pb-3">
-                        <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-white/40 uppercase tracking-widest">
-                          <span>{page.chapter}</span>
-                          <span>p. {String((idx + 1) * 2 - 1).padStart(2, '0')}-{String((idx + 1) * 2).padStart(2, '0')}</span>
-                        </div>
-                        <h4 className="font-liber font-extrabold text-base sm:text-xl md:text-2xl text-white tracking-tight leading-tight">
-                          {page.title}
-                        </h4>
-                      </div>
-
-                      {/* Journal Quote in elegant Liber serif italic style */}
-                      <div className="my-auto py-2 sm:py-3 space-y-2">
-                        <blockquote className="text-xs sm:text-sm md:text-base font-serif italic text-white/90 leading-relaxed border-l-2 border-white/40 pl-3">
-                          "{page.quote}"
-                        </blockquote>
-
-                        <p className="text-[11px] sm:text-xs text-white/60 font-light leading-relaxed hidden sm:block">
-                          {page.notes}
-                        </p>
-                      </div>
-
-                      {/* Technical & Director's Log Footer */}
-                      <div className="pt-3 border-t border-white/10 space-y-2 text-[10px] sm:text-xs font-liber">
-                        <div className="space-y-0.5">
-                          <span className="text-white/30 text-[9px] uppercase tracking-wider block">Location</span>
-                          <span className="text-white/80 truncate block">{page.location}</span>
-                        </div>
-
-                        <div className="space-y-0.5 hidden sm:block">
-                          <span className="text-white/30 text-[9px] uppercase tracking-wider block">Capture Pipeline</span>
-                          <span className="text-white/60 font-mono text-[10px] truncate block">{page.technical}</span>
-                        </div>
-                      </div>
-
-                      {/* Subtle Page Corner Turn Cue */}
-                      <div className="absolute bottom-2 right-2 text-[9px] font-mono text-white/20">
-                        tuvugane · vol. i
-                      </div>
-                    </div>
+                    {renderMedia(currentSpread.right)}
+                    {/* Dynamic bending shadow that deepens as page curves */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.7 }}
+                      transition={{ duration: 0.42 }}
+                      className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"
+                    />
                   </div>
-                </div>
-              );
-            })}
+
+                  {/* Back of Turning Page (Incoming Next Left Page, unfolding flat to left) */}
+                  <div
+                    className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                    style={{
+                      transform: 'rotateY(180deg)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
+                  >
+                    {renderMedia(nextSpread.left)}
+                    {/* Shadow fades out as it unfolds flat onto left page */}
+                    <motion.div
+                      initial={{ opacity: 0.7 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ duration: 0.43, delay: 0.42 }}
+                      className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/30 to-transparent pointer-events-none"
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {/* BACKWARD FLIP: Left Page bends in half along center spine and turns right */}
+              {flipDirection === 'prev' && (
+                <motion.div
+                  initial={{ rotateY: 0 }}
+                  animate={{ rotateY: 180 }}
+                  transition={{
+                    duration: 0.85,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  onAnimationComplete={onFlipComplete}
+                  className="absolute top-0 left-0 w-1/2 h-full z-30"
+                  style={{
+                    transformOrigin: 'right center',
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
+                  {/* Front of Turning Page (Current Left Page, folding toward right) */}
+                  <div
+                    className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                    style={{
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
+                  >
+                    {renderMedia(currentSpread.left)}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.7 }}
+                      transition={{ duration: 0.42 }}
+                      className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent pointer-events-none"
+                    />
+                  </div>
+
+                  {/* Back of Turning Page (Incoming Prev Right Page, unfolding flat to right) */}
+                  <div
+                    className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                    style={{
+                      transform: 'rotateY(180deg)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
+                  >
+                    {renderMedia(prevSpread.right)}
+                    <motion.div
+                      initial={{ opacity: 0.7 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ duration: 0.43, delay: 0.42 }}
+                      className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent pointer-events-none"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
 
-          {/* Floating Pill Controls matching the exact dock in the video */}
+          {/* Minimalist Floating Controls: Page Flipping Buttons Only (No text metadata, no image count) */}
           <div className="mt-8 z-30 flex items-center justify-center">
-            <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 rounded-full bg-[#111113]/90 backdrop-blur-xl border border-white/15 shadow-2xl text-white font-liber">
-              {/* Previous page arrow */}
+            <div className="flex items-center gap-4 px-5 py-2 rounded-full bg-[#111113]/90 backdrop-blur-xl border border-white/15 shadow-2xl text-white">
               <button
                 type="button"
                 onClick={handlePrev}
-                className="p-1.5 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-                aria-label="Previous Page"
+                disabled={isFlipping}
+                className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors disabled:opacity-40"
+                aria-label="Turn page left"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
 
-              {/* Page Number indicator */}
-              <div className="text-xs font-mono font-semibold tracking-wider text-white px-2">
-                <span>{String(currentIndex + 1).padStart(2, '0')}</span>
-                <span className="text-white/30 mx-1.5">/</span>
-                <span className="text-white/40">{String(totalPages).padStart(2, '0')}</span>
-              </div>
+              <div className="w-[1px] h-4 bg-white/15" />
 
-              {/* Next page arrow */}
               <button
                 type="button"
                 onClick={handleNext}
-                className="p-1.5 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-                aria-label="Next Page"
+                disabled={isFlipping}
+                className="p-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors disabled:opacity-40"
+                aria-label="Turn page right"
               >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-
-              <div className="w-[1px] h-4 bg-white/15 mx-0.5" />
-
-              {/* Auto Slideshow toggle */}
-              <button
-                type="button"
-                onClick={() => setIsAutoPlayPages(!isAutoPlayPages)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-colors ${
-                  isAutoPlayPages ? 'bg-white text-black font-semibold' : 'text-white/60 hover:text-white'
-                }`}
-                title={isAutoPlayPages ? 'Pause slideshow' : 'Auto-flip pages'}
-              >
-                {isAutoPlayPages ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3 fill-current" />}
-                <span className="hidden sm:inline text-[11px]">Auto</span>
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
