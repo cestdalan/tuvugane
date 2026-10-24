@@ -112,21 +112,13 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
             }}
-            className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-10 text-xs font-liber text-white/60"
+            className="flex items-center text-xs font-liber text-white/60"
           >
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wider text-white/40 block font-semibold">Medium</span>
-              <span className="text-white/80 font-medium">35mm Cinema · Motion Craft</span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wider text-white/40 block font-semibold">Origin</span>
-              <span className="text-white/80 font-medium">Rwanda</span>
-            </div>
             <button
               type="button"
               onClick={() => onNavigate('work')}
               data-cursor="GALLERY"
-              className="inline-flex items-center gap-2 text-xs font-liber font-bold uppercase tracking-wider text-white hover:text-white/70 transition-colors pt-2 sm:pt-0"
+              className="inline-flex items-center gap-2 text-xs font-liber font-bold uppercase tracking-wider text-white hover:text-white/70 transition-colors"
             >
               <span>Explore Gallery</span>
               <ArrowDown className="w-3.5 h-3.5" />
