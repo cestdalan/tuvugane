@@ -40,7 +40,7 @@ export default function AboutSection({ onNavigate }: AboutSectionProps) {
 
           <div className="lg:col-span-6 space-y-6 lg:pl-6">
             <p className="text-base sm:text-lg text-white/70 font-light leading-relaxed">
-              <strong className="text-white font-medium">Tuvugane</strong> (Kinyarwanda: <em>"Let us speak together"</em>) is a creative film and motion design studio headquartered in Kigali. We craft cinematic documentary, commercial narratives, and avant-garde kinetic direction.
+              <strong className="text-white font-medium">Tuvugane</strong> is a creative film and motion design studio headquartered in Kigali. We craft cinematic documentary, commercial narratives, and avant-garde kinetic direction.
             </p>
 
             <button

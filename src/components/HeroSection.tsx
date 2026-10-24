@@ -70,28 +70,7 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
       {/* Spacer for Top Header */}
       <div className="h-28 md:h-36" />
 
-      {/* 2. Central Play Reel Trigger */}
-      <div className="relative z-10 flex flex-col items-center justify-center my-auto py-8">
-        <motion.button
-          type="button"
-          onClick={onOpenShowreel}
-          data-cursor="PLAY"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="group flex flex-col items-center gap-3 cursor-pointer focus-visible:outline-none"
-          aria-label="Play Studio Showreel"
-        >
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-white/30 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:border-white group-hover:bg-white/10 backdrop-blur-sm shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-            <Play className="w-6 h-6 text-white fill-white ml-0.5 transition-transform duration-300 group-hover:scale-105" />
-          </div>
-          <span className="text-[11px] font-liber font-bold uppercase tracking-[0.25em] text-white/60 group-hover:text-white transition-colors">
-            Watch Reel
-          </span>
-        </motion.button>
-      </div>
-
-      {/* 3. Hero Bottom Editorial Title & Meta in Pure Liber Font */}
+      {/* Hero Bottom Editorial Title & Meta in Pure Liber Font */}
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 pb-12 pt-6">
         <motion.div
           initial="hidden"
