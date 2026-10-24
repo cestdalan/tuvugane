@@ -52,7 +52,7 @@ export default function HeroSection({ onOpenShowreel, onNavigate }: HeroSectionP
           playsInline
           disablePictureInPicture
           preload="auto"
-          poster="/assets/aistudio/new_1_2f61cc23.jpg"
+          poster="/assets/aistudio/new_1_2f61cc23.webp"
           className="w-full h-full object-cover object-center scale-105 opacity-50 transition-opacity duration-1000"
         >
           <source

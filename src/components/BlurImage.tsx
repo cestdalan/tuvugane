@@ -23,7 +23,12 @@ export default function BlurImage({
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // If image is already cached by browser upon mount
+  // Derive companion WebP path if available
+  const webpSrc = src.match(/\.(jpg|jpeg|png)$/i)
+    ? src.replace(/\.(jpg|jpeg|png)$/i, '.webp')
+    : undefined;
+
+  // Check if image is already cached by browser upon mount
   useEffect(() => {
     if (imgRef.current && imgRef.current.complete) {
       if (imgRef.current.naturalWidth > 0) {
@@ -48,26 +53,29 @@ export default function BlurImage({
         </div>
       )}
 
-      {/* 2. Main High-Fidelity Image with Blur-Up Transition */}
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
-        referrerPolicy={referrerPolicy}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-        className={`w-full h-full object-cover transition-all duration-700 ease-out ${
-          isLoaded
-            ? 'opacity-100 blur-0 scale-100'
-            : 'opacity-0 blur-md scale-105'
-        } ${className}`}
-      />
+      {/* 2. Modern Picture Element with WebP & Progressive JPG Fallback */}
+      <picture className="w-full h-full block">
+        {webpSrc && <source srcSet={webpSrc} type="image/webp" />}
+        <img
+          ref={imgRef}
+          src={src}
+          alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          referrerPolicy={referrerPolicy}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setHasError(true)}
+          className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+            isLoaded
+              ? 'opacity-100 blur-0 scale-100'
+              : 'opacity-0 blur-md scale-105'
+          } ${className}`}
+        />
+      </picture>
 
       {/* 3. Fallback error state if broken */}
       {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 text-white/40 text-xs font-mono">
+        <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 text-white/40 text-xs font-liber">
           <span>Failed to load image</span>
         </div>
       )}

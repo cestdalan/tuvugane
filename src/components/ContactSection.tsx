@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Check, Copy, X, Send } from 'lucide-react';
 import { InquiryFormData } from '../types';
+import BlurImage from './BlurImage';
 
 interface ContactSectionProps {
   preselectedService?: string;
@@ -42,10 +43,10 @@ export default function ContactSection({ preselectedService }: ContactSectionPro
     >
       {/* Background Subtle Photo Ambience */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-        <img
-          src="/assets/aistudio/1_The_Dawn_Crossing_b4f87c17.JPG"
+        <BlurImage
+          src="/assets/aistudio/1_The_Dawn_Crossing_b4f87c17.webp"
           alt="Atmospheric landscape"
-          className="w-full h-full object-cover filter grayscale"
+          className="filter grayscale"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-[#060606]/90 to-[#060606]" />
       </div>
