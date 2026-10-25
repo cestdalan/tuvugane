@@ -13,8 +13,6 @@ export default function Footer({ onNavigate }: FooterProps) {
     { id: 'hero', label: 'home' },
     { id: 'work', label: 'works' },
     { id: 'archive', label: 'archive' },
-    { id: 'what-we-do', label: 'practice' },
-    { id: 'about', label: 'studio' },
     { id: 'contact', label: 'contact' },
   ];
 

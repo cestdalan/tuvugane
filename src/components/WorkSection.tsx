@@ -81,6 +81,62 @@ function SquareMosaicCard({
 }
 
 /**
+ * Mobile Work Card: One card per row, full-width vertical stream on mobile
+ */
+function MobileWorkCard({
+  project,
+  onClick,
+}: {
+  project: Project;
+  onClick: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 25 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20px' }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      onClick={onClick}
+      data-cursor="VIEW"
+      className="group cursor-pointer relative overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/30 transition-all duration-300 rounded font-liber w-full aspect-[4/3]"
+    >
+      <BlurImage
+        src={project.imageUrl}
+        alt={project.title}
+        priority={false}
+        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+      />
+
+      <div className="absolute inset-0 film-grain pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-75 pointer-events-none" />
+
+      {/* Top category label */}
+      <div className="absolute top-3 left-3 pointer-events-none z-10">
+        <span className="text-[10px] font-liber font-semibold text-white/90 uppercase tracking-widest bg-black/60 backdrop-blur-md px-2.5 py-1 rounded">
+          {project.category}
+        </span>
+      </div>
+
+      {/* Bottom details overlay */}
+      <div className="absolute inset-x-0 bottom-0 p-4 z-10 pointer-events-none flex items-end justify-between gap-3">
+        <div className="space-y-0.5 overflow-hidden">
+          <span className="text-[11px] font-liber text-white/60 block truncate">
+            {project.client.split('&')[0]}
+          </span>
+          <h3 className="font-liber font-bold text-lg text-white group-hover:text-white/90 transition-colors truncate">
+            {project.title}
+          </h3>
+        </div>
+
+        <div className="w-7 h-7 rounded-full bg-white text-black flex items-center justify-center shrink-0">
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/**
  * Card for Editorial Feed
  */
 function EditorialFeedCard({
@@ -323,29 +379,43 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
           </div>
         </motion.div>
 
-        {/* 2. BIG PERFECT SQUARE GALLERY MODE (With matched Visual Archive margins & gap) */}
+        {/* 2. GALLERY GRID MODE */}
         {viewMode === 'grid' && (
-          <div className="w-full aspect-square relative pt-2">
-            <div
-              className={`grid ${squareConfig.gridClass} gap-3 sm:gap-4 md:gap-6 w-full h-full aspect-square`}
-            >
-              {filteredProjects.map((project, idx) => {
-                const conf = squareConfig.spans[idx] || {
-                  span: 'col-span-1 row-span-1',
-                  isLarge: false,
-                };
-                return (
-                  <SquareMosaicCard
-                    key={project.id}
-                    project={project}
-                    spanClass={conf.span}
-                    isLarge={conf.isLarge}
-                    onClick={() => onSelectProject(project)}
-                  />
-                );
-              })}
+          <>
+            {/* Mobile View: One card per line, stacked vertically */}
+            <div className="flex flex-col gap-6 md:hidden w-full">
+              {filteredProjects.map((project) => (
+                <MobileWorkCard
+                  key={project.id}
+                  project={project}
+                  onClick={() => onSelectProject(project)}
+                />
+              ))}
             </div>
-          </div>
+
+            {/* Tablet & Desktop View: Big Perfect Square Mosaic */}
+            <div className="hidden md:block w-full aspect-square relative pt-2">
+              <div
+                className={`grid ${squareConfig.gridClass} gap-3 sm:gap-4 md:gap-6 w-full h-full aspect-square`}
+              >
+                {filteredProjects.map((project, idx) => {
+                  const conf = squareConfig.spans[idx] || {
+                    span: 'col-span-1 row-span-1',
+                    isLarge: false,
+                  };
+                  return (
+                    <SquareMosaicCard
+                      key={project.id}
+                      project={project}
+                      spanClass={conf.span}
+                      isLarge={conf.isLarge}
+                      onClick={() => onSelectProject(project)}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </>
         )}
 
         {/* 3. EDITORIAL FEED MODE */}

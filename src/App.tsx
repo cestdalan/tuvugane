@@ -7,7 +7,6 @@ import HeroSection from './components/HeroSection';
 import WorkSection from './components/WorkSection';
 import ArchiveSection from './components/ArchiveSection';
 import ServicesSection from './components/ServicesSection';
-import AboutSection from './components/AboutSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import ShowreelModal from './components/ShowreelModal';
@@ -48,7 +47,7 @@ export default function App() {
           setSelectedProject(matched);
         }
       } else {
-        const validSections = ['hero', 'work', 'archive', 'what-we-do', 'about', 'contact'];
+        const validSections = ['hero', 'work', 'archive', 'what-we-do', 'contact'];
         if (validSections.includes(hash)) {
           setTimeout(() => {
             scrollToSection(hash, false);
@@ -64,7 +63,7 @@ export default function App() {
 
   // ScrollSpy tracking sections
   useEffect(() => {
-    const sectionIds = ['hero', 'work', 'archive', 'what-we-do', 'about', 'contact'];
+    const sectionIds = ['hero', 'work', 'archive', 'what-we-do', 'contact'];
 
     const handleScroll = () => {
       const scrollPos = window.scrollY + 140;
@@ -129,9 +128,6 @@ export default function App() {
 
         {/* Practice / Disciplines (#what-we-do) */}
         <ServicesSection onSelectServiceForInquiry={handleSelectServiceForInquiry} />
-
-        {/* Studio & Crew (#about) */}
-        <AboutSection onNavigate={scrollToSection} />
 
         {/* Dialogue Desk (#contact) */}
         <ContactSection preselectedService={preselectedService} />
