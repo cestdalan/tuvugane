@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
 import { ArchiveStill } from '../types';
-import { X, Maximize2, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+import { X, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react';
 import BlurImage from './BlurImage';
 
 export default function ArchiveSection() {
@@ -85,7 +85,8 @@ export default function ArchiveSection() {
 
   /**
    * Renders half of the continuous image so that left & right halves
-   * together seamlessly form ONE single continuous image across both pages with NO middle line.
+   * together seamlessly form ONE single continuous image across both pages with NO middle line,
+   * enhanced with natural concave 3D book gutter shading.
    */
   const renderHalfImage = (still: ArchiveStill, side: 'left' | 'right', isPriority = false) => {
     const isLeft = side === 'left';
@@ -106,12 +107,16 @@ export default function ArchiveSection() {
           />
         </div>
 
-        {/* Subtle soft paper fold gradient (NO visible line, only gentle natural curvature shadow) */}
+        {/* Natural concave 3D book curve shading into center spine (NO harsh line) */}
         <div
           className={`absolute inset-y-0 ${
             isLeft ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'
-          } from-black/25 via-black/5 to-transparent w-8 sm:w-16 pointer-events-none z-10`}
+          } from-black/35 via-black/10 to-transparent w-10 sm:w-20 pointer-events-none z-10`}
         />
+
+        {/* Subtle top/bottom page edge shadow */}
+        <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/25 to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-black/25 to-transparent pointer-events-none z-10" />
       </div>
     );
   };
@@ -121,13 +126,15 @@ export default function ArchiveSection() {
    */
   const renderStackedPeekPage = (still: ArchiveStill) => {
     return (
-      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-xl relative">
+      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl relative">
         <BlurImage
           src={still.imageUrl}
           alt={still.title}
-          className="w-full h-full object-cover opacity-65"
+          className="w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-black/40" />
+        {/* Layered paper edge highlight */}
+        <div className="absolute inset-y-0 right-0 w-1 bg-white/20" />
       </div>
     );
   };
@@ -248,7 +255,7 @@ export default function ArchiveSection() {
           className="fixed inset-0 z-50 flex flex-col justify-between items-center bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber p-4 sm:p-8 overflow-y-auto"
         >
           {/* Top Bar with Navigation and Close */}
-          <div className="w-full max-w-5xl flex items-center justify-between pb-4 sm:pb-6 border-b border-white/10 z-50">
+          <div className="w-full max-w-5xl flex items-center justify-between pb-3 sm:pb-5 border-b border-white/10 z-50">
             <div className="flex items-center gap-2 text-xs font-liber text-white/50">
               <span className="uppercase tracking-widest text-[10px]">Visual Archive Book</span>
             </div>
@@ -269,19 +276,19 @@ export default function ArchiveSection() {
             <div
               className="relative w-full max-w-5xl h-[340px] sm:h-[460px] md:h-[540px] lg:h-[600px] flex items-center justify-center select-none"
               style={{
-                perspective: '2200px',
+                perspective: '2500px',
               }}
             >
-              {/* Ambient Floor Shadow beneath the book */}
-              <div className="absolute -bottom-8 w-[88%] h-20 bg-black/95 blur-2xl rounded-full pointer-events-none transform scale-y-50" />
+              {/* Soft Ambient Floor Shadow beneath the physical book */}
+              <div className="absolute -bottom-10 w-[92%] h-24 bg-black/95 blur-2xl rounded-full pointer-events-none transform scale-y-50" />
 
-              {/* 1. LEFT STACK OF PAGES (Packed underneath on the left) */}
+              {/* 1. LEFT STACK OF PAGES (Packed underneath on the left in 3D) */}
               <div
                 onClick={handlePrev}
                 title="Previous page"
-                className="absolute left-[-22px] sm:left-[-38px] md:left-[-52px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:-translate-x-2"
+                className="absolute left-[-24px] sm:left-[-40px] md:left-[-56px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:-translate-x-2"
                 style={{
-                  transform: 'translateZ(-90px) rotateY(18deg) scale(0.93)',
+                  transform: 'translateZ(-100px) rotateY(16deg) scale(0.93)',
                   transformOrigin: 'left center',
                 }}
               >
@@ -293,20 +300,20 @@ export default function ArchiveSection() {
                 title="Previous page"
                 className="absolute left-[-12px] sm:left-[-20px] md:left-[-28px] w-[90%] h-[96%] top-[2%] cursor-pointer z-20 transition-transform duration-500 hover:-translate-x-1"
                 style={{
-                  transform: 'translateZ(-45px) rotateY(10deg) scale(0.97)',
+                  transform: 'translateZ(-50px) rotateY(9deg) scale(0.97)',
                   transformOrigin: 'left center',
                 }}
               >
                 {renderStackedPeekPage(prevStill)}
               </div>
 
-              {/* 2. RIGHT STACK OF PAGES (Packed underneath on the right) */}
+              {/* 2. RIGHT STACK OF PAGES (Packed underneath on the right in 3D) */}
               <div
                 onClick={handleNext}
                 title="Next page"
-                className="absolute right-[-22px] sm:right-[-38px] md:right-[-52px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:translate-x-2"
+                className="absolute right-[-24px] sm:right-[-40px] md:right-[-56px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:translate-x-2"
                 style={{
-                  transform: 'translateZ(-90px) rotateY(-18deg) scale(0.93)',
+                  transform: 'translateZ(-100px) rotateY(-16deg) scale(0.93)',
                   transformOrigin: 'right center',
                 }}
               >
@@ -318,168 +325,191 @@ export default function ArchiveSection() {
                 title="Next page"
                 className="absolute right-[-12px] sm:right-[-20px] md:right-[-28px] w-[90%] h-[96%] top-[2%] cursor-pointer z-20 transition-transform duration-500 hover:translate-x-1"
                 style={{
-                  transform: 'translateZ(-45px) rotateY(-10deg) scale(0.97)',
+                  transform: 'translateZ(-50px) rotateY(-9deg) scale(0.97)',
                   transformOrigin: 'right center',
                 }}
               >
                 {renderStackedPeekPage(nextStill)}
               </div>
 
-              {/* 3. THE TOP CURRENT BOOK SPREAD (Single image taking over both pages, NO middle line) */}
+              {/* 3. PHYSICAL 3D BOOK BODY (With realistic book casing & page block thickness) */}
               <div
-                className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0a0a0c] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex z-30"
+                className="relative w-full h-full rounded-2xl sm:rounded-3xl p-1 sm:p-1.5 bg-gradient-to-b from-[#1c1c20] via-[#111114] to-[#09090b] border border-white/20 shadow-[0_30px_100px_rgba(0,0,0,0.95),0_10px_30px_rgba(0,0,0,0.85)] flex z-30"
                 style={{
                   transformStyle: 'preserve-3d',
                 }}
               >
-                {/* STATIC BASE LAYER */}
-                {/* Left Half (Underneath / Static) */}
+                {/* Authentic bottom page edge block (rim showing paper thickness) */}
+                <div className="absolute -bottom-2.5 inset-x-4 h-2.5 bg-gradient-to-b from-[#1f1f25] to-[#0e0e11] rounded-b border-b border-white/10 shadow-lg pointer-events-none" />
+
+                {/* The Two-Page Open Spread */}
                 <div
-                  onClick={handlePrev}
-                  data-cursor="PREV"
-                  className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                  className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#0a0a0c] flex"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                  }}
                 >
-                  {flipDirection === 'prev'
-                    ? renderHalfImage(prevStill, 'left')
-                    : renderHalfImage(currentStill, 'left', true)}
-                </div>
-
-                {/* Right Half (Underneath / Static: Unfolds as top page turns left) */}
-                <div
-                  onClick={handleNext}
-                  data-cursor="NEXT"
-                  className="w-1/2 h-full relative overflow-hidden cursor-pointer"
-                >
-                  {flipDirection === 'next'
-                    ? renderHalfImage(nextStill, 'right')
-                    : renderHalfImage(currentStill, 'right', true)}
-                </div>
-
-                {/* DYNAMIC TURNING LEAF */}
-                {/* FORWARD FLIP: Right half of current image bends along center spine and flips 180° to the left */}
-                {flipDirection === 'next' && (
-                  <motion.div
-                    initial={{ rotateY: 0 }}
-                    animate={{ rotateY: -180 }}
-                    transition={{
-                      duration: 0.45,
-                      ease: [0.25, 1, 0.5, 1],
-                    }}
-                    onAnimationComplete={onFlipComplete}
-                    className="absolute top-0 right-0 w-1/2 h-full z-40"
-                    style={{
-                      transformOrigin: 'left center',
-                      transformStyle: 'preserve-3d',
-                    }}
+                  {/* STATIC BASE LAYER */}
+                  {/* Left Half (Underneath / Static) */}
+                  <div
+                    onClick={handlePrev}
+                    data-cursor="PREV"
+                    className="w-1/2 h-full relative overflow-hidden cursor-pointer"
                   >
-                    {/* Front Face: Current image right half, curving across to left */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {renderHalfImage(currentStill, 'right')}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.7 }}
-                        transition={{ duration: 0.22 }}
-                        className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent pointer-events-none"
-                      />
-                    </div>
+                    {flipDirection === 'prev'
+                      ? renderHalfImage(prevStill, 'left')
+                      : renderHalfImage(currentStill, 'left', true)}
+                  </div>
 
-                    {/* Back Face: Incoming next image left half, unfolding onto left page */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
-                      style={{
-                        transform: 'rotateY(180deg)',
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {renderHalfImage(nextStill, 'left')}
-                      <motion.div
-                        initial={{ opacity: 0.7 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.23, delay: 0.22 }}
-                        className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/30 to-transparent pointer-events-none"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* BACKWARD FLIP: Left half of current image bends along center spine and flips 180° to the right */}
-                {flipDirection === 'prev' && (
-                  <motion.div
-                    initial={{ rotateY: 0 }}
-                    animate={{ rotateY: 180 }}
-                    transition={{
-                      duration: 0.45,
-                      ease: [0.25, 1, 0.5, 1],
-                    }}
-                    onAnimationComplete={onFlipComplete}
-                    className="absolute top-0 left-0 w-1/2 h-full z-40"
-                    style={{
-                      transformOrigin: 'right center',
-                      transformStyle: 'preserve-3d',
-                    }}
+                  {/* Right Half (Underneath / Static: Unfolds as top page turns left) */}
+                  <div
+                    onClick={handleNext}
+                    data-cursor="NEXT"
+                    className="w-1/2 h-full relative overflow-hidden cursor-pointer"
                   >
-                    {/* Front Face: Current image left half, curving across to right */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                    {flipDirection === 'next'
+                      ? renderHalfImage(nextStill, 'right')
+                      : renderHalfImage(currentStill, 'right', true)}
+                  </div>
+
+                  {/* DYNAMIC 3D TURNING PAGE WITH AUTHENTIC CURL & BEND */}
+                  {/* FORWARD FLIP: Right page curls, lifts, and bends across the center spine to the left */}
+                  {flipDirection === 'next' && (
+                    <motion.div
+                      initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
+                      animate={{
+                        rotateY: [0, -75, -135, -180],
+                        skewY: [0, -4.5, 3.5, 0],
+                        rotateZ: [0, 1.8, -1.2, 0],
+                      }}
+                      transition={{
+                        duration: 0.46,
+                        times: [0, 0.4, 0.75, 1],
+                        ease: [0.25, 1, 0.5, 1],
+                      }}
+                      onAnimationComplete={onFlipComplete}
+                      className="absolute top-0 right-0 w-1/2 h-full z-40"
                       style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
+                        transformOrigin: 'left center',
+                        transformStyle: 'preserve-3d',
                       }}
                     >
-                      {renderHalfImage(currentStill, 'left')}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.7 }}
-                        transition={{ duration: 0.22 }}
-                        className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/40 to-transparent pointer-events-none"
-                      />
-                    </div>
+                      {/* Front Face: Current image right half, curving across to left */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfImage(currentStill, 'right')}
+                        {/* Dynamic traveling bend highlight & shadow */}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.85, 0.2] }}
+                          transition={{ duration: 0.23, times: [0, 0.5, 1] }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/90 via-white/10 to-transparent pointer-events-none"
+                        />
+                      </div>
 
-                    {/* Back Face: Incoming prev image right half, unfolding onto right page */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                      {/* Back Face: Incoming next image left half, unfolding onto left page */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfImage(nextStill, 'left')}
+                        {/* Shadow softens as page flattens on the left stack */}
+                        <motion.div
+                          initial={{ opacity: 0.85 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ duration: 0.23, delay: 0.23 }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/90 via-black/30 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* BACKWARD FLIP: Left page curls, lifts, and bends across the center spine to the right */}
+                  {flipDirection === 'prev' && (
+                    <motion.div
+                      initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
+                      animate={{
+                        rotateY: [0, 75, 135, 180],
+                        skewY: [0, 4.5, -3.5, 0],
+                        rotateZ: [0, -1.8, 1.2, 0],
+                      }}
+                      transition={{
+                        duration: 0.46,
+                        times: [0, 0.4, 0.75, 1],
+                        ease: [0.25, 1, 0.5, 1],
+                      }}
+                      onAnimationComplete={onFlipComplete}
+                      className="absolute top-0 left-0 w-1/2 h-full z-40"
                       style={{
-                        transform: 'rotateY(180deg)',
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
+                        transformOrigin: 'right center',
+                        transformStyle: 'preserve-3d',
                       }}
                     >
-                      {renderHalfImage(prevStill, 'right')}
-                      <motion.div
-                        initial={{ opacity: 0.7 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.23, delay: 0.22 }}
-                        className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/30 to-transparent pointer-events-none"
-                      />
-                    </div>
-                  </motion.div>
-                )}
+                      {/* Front Face: Current image left half, curving across to right */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfImage(currentStill, 'left')}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.85, 0.2] }}
+                          transition={{ duration: 0.23, times: [0, 0.5, 1] }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/90 via-white/10 to-transparent pointer-events-none"
+                        />
+                      </div>
 
-                {/* Description written down in small words on the left bottom corner of the image */}
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-xs sm:max-w-md p-3 sm:p-4 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 pointer-events-none text-left space-y-1">
-                  <h4 className="font-liber font-bold text-sm sm:text-base text-white leading-tight">
-                    {currentStill.title}
-                  </h4>
-                  <p className="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed">
-                    {currentStill.description}
-                  </p>
-                  <div className="pt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-white/45 font-mono">
-                    <span>{currentStill.camera}</span>
-                    <span>·</span>
-                    <span>{currentStill.location}</span>
+                      {/* Back Face: Incoming prev image right half, unfolding onto right page */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfImage(prevStill, 'right')}
+                        <motion.div
+                          initial={{ opacity: 0.85 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ duration: 0.23, delay: 0.23 }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Description in small words on the left bottom corner with NO background box, highly legible with drop-shadow */}
+                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-[260px] sm:max-w-xs pointer-events-none text-left space-y-1">
+                    <h4 className="font-liber font-bold text-xs sm:text-sm text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      {currentStill.title}
+                    </h4>
+                    <p className="text-[10px] sm:text-[11px] text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      {currentStill.description}
+                    </p>
+                    <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] text-white/60 font-mono tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      <span>{currentStill.camera}</span>
+                      <span>·</span>
+                      <span>{currentStill.location}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Minimalist Floating Controls: Page Flipping Buttons Only */}
+            {/* Minimalist Page Turning Controls */}
             <div className="mt-8 z-30 flex items-center justify-center">
               <div className="flex items-center gap-4 px-5 py-2 rounded-full bg-[#111113]/90 backdrop-blur-xl border border-white/15 shadow-2xl text-white">
                 <button
