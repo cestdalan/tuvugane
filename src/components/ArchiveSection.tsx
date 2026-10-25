@@ -1,69 +1,102 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
-import { ArchiveStill } from '../types';
-import { X, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Maximize2, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import BlurImage from './BlurImage';
 
+interface ArchiveBookItem {
+  id: string;
+  title: string;
+  location: string;
+  camera: string;
+  lens?: string;
+  imageUrl: string;
+  videoUrl?: string;
+  type: 'video' | 'photo';
+  aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
+  description: string;
+}
+
+const CINEMA_REEL_ITEM: ArchiveBookItem = {
+  id: 'film-villages-reel',
+  title: 'Hidden African Villages: Cinema Reel',
+  location: 'Northern Province & Nyabarongo',
+  camera: 'Arri Alexa Mini LF',
+  lens: 'Cooke Anamorphic 40mm',
+  videoUrl: '/assets/aistudio/Discover_Hidden_African_Villages_A_Cinematic_Teaser_5481f979.mp4',
+  imageUrl: '/assets/aistudio/new_1_2f61cc23.webp',
+  type: 'video',
+  aspectRatio: 'landscape',
+  description: 'Observational cinematic journey across Rwandan hills, morning mist, and river valleys at dawn.',
+};
+
+const ALL_ARCHIVE_ITEMS: ArchiveBookItem[] = [
+  CINEMA_REEL_ITEM,
+  ...ARCHIVE_STILLS.map((still) => ({
+    ...still,
+    type: 'photo' as const,
+  })),
+];
+
 export default function ArchiveSection() {
-  const [selectedStillIndex, setSelectedStillIndex] = useState<number | null>(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
   const [activeAspectFilter, setActiveAspectFilter] = useState<'all' | 'portrait' | 'landscape'>('all');
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
 
-  const filteredStills =
+  const filteredItems =
     activeAspectFilter === 'all'
-      ? ARCHIVE_STILLS
-      : ARCHIVE_STILLS.filter((s) => s.aspectRatio === activeAspectFilter);
+      ? ALL_ARCHIVE_ITEMS
+      : ALL_ARCHIVE_ITEMS.filter((s) => s.aspectRatio === activeAspectFilter);
 
-  const totalItems = ARCHIVE_STILLS.length;
+  const totalItems = ALL_ARCHIVE_ITEMS.length;
 
-  const openBookLightbox = (still: ArchiveStill) => {
-    const idx = ARCHIVE_STILLS.findIndex((s) => s.id === still.id);
-    setSelectedStillIndex(idx >= 0 ? idx : 0);
+  const openBookLightbox = (item: ArchiveBookItem) => {
+    const idx = ALL_ARCHIVE_ITEMS.findIndex((s) => s.id === item.id);
+    setSelectedItemIndex(idx >= 0 ? idx : 0);
     setFlipDirection(null);
     setIsFlipping(false);
     document.body.style.overflow = 'hidden';
   };
 
   const closeBookLightbox = () => {
-    setSelectedStillIndex(null);
+    setSelectedItemIndex(null);
     setFlipDirection(null);
     setIsFlipping(false);
     document.body.style.overflow = '';
   };
 
   // Safe index calculation
-  const currentIndex = selectedStillIndex ?? 0;
-  const currentStill = ARCHIVE_STILLS[currentIndex];
+  const currentIndex = selectedItemIndex ?? 0;
+  const currentItem = ALL_ARCHIVE_ITEMS[currentIndex];
 
   const nextIndex = (currentIndex + 1) % totalItems;
   const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
   const next2Index = (currentIndex + 2) % totalItems;
   const prev2Index = (currentIndex - 2 + totalItems) % totalItems;
 
-  const nextStill = ARCHIVE_STILLS[nextIndex];
-  const prevStill = ARCHIVE_STILLS[prevIndex];
-  const next2Still = ARCHIVE_STILLS[next2Index];
-  const prev2Still = ARCHIVE_STILLS[prev2Index];
+  const nextItem = ALL_ARCHIVE_ITEMS[nextIndex];
+  const prevItem = ALL_ARCHIVE_ITEMS[prevIndex];
+  const next2Item = ALL_ARCHIVE_ITEMS[next2Index];
+  const prev2Item = ALL_ARCHIVE_ITEMS[prev2Index];
 
   const handleNext = () => {
-    if (isFlipping || selectedStillIndex === null) return;
+    if (isFlipping || selectedItemIndex === null) return;
     setFlipDirection('next');
     setIsFlipping(true);
   };
 
   const handlePrev = () => {
-    if (isFlipping || selectedStillIndex === null) return;
+    if (isFlipping || selectedItemIndex === null) return;
     setFlipDirection('prev');
     setIsFlipping(true);
   };
 
   const onFlipComplete = () => {
     if (flipDirection === 'next') {
-      setSelectedStillIndex(nextIndex);
+      setSelectedItemIndex(nextIndex);
     } else if (flipDirection === 'prev') {
-      setSelectedStillIndex(prevIndex);
+      setSelectedItemIndex(prevIndex);
     }
     setFlipDirection(null);
     setIsFlipping(false);
@@ -71,7 +104,7 @@ export default function ArchiveSection() {
 
   // Keyboard navigation when book is open
   useEffect(() => {
-    if (selectedStillIndex === null) return;
+    if (selectedItemIndex === null) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeBookLightbox();
@@ -81,15 +114,42 @@ export default function ArchiveSection() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedStillIndex, isFlipping, nextIndex, prevIndex]);
+  }, [selectedItemIndex, isFlipping, nextIndex, prevIndex]);
 
   /**
-   * Renders half of the continuous image so that left & right halves
-   * together seamlessly form ONE single continuous image across both pages with NO middle line,
-   * enhanced with natural concave 3D book gutter shading.
+   * Renders half of the continuous image/video for the flip animation
+   * when turning across pages.
    */
-  const renderHalfImage = (still: ArchiveStill, side: 'left' | 'right', isPriority = false) => {
+  const renderHalfMedia = (item: ArchiveBookItem, side: 'left' | 'right', isPriority = false) => {
     const isLeft = side === 'left';
+
+    if (item.type === 'video' && item.videoUrl) {
+      return (
+        <div className="relative w-full h-full overflow-hidden bg-black select-none">
+          <div
+            className="absolute top-0 h-full w-[200%] max-w-none"
+            style={{
+              left: isLeft ? '0%' : '-100%',
+            }}
+          >
+            <video
+              src={item.videoUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div
+            className={`absolute inset-y-0 ${
+              isLeft ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'
+            } from-black/35 via-black/10 to-transparent w-10 sm:w-20 pointer-events-none z-10`}
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="relative w-full h-full overflow-hidden bg-black select-none">
@@ -100,23 +160,18 @@ export default function ArchiveSection() {
           }}
         >
           <BlurImage
-            src={still.imageUrl}
-            alt={still.title}
+            src={item.imageUrl}
+            alt={item.title}
             priority={isPriority}
             className="w-full h-full object-cover"
           />
         </div>
 
-        {/* Natural concave 3D book curve shading into center spine (NO harsh line) */}
         <div
           className={`absolute inset-y-0 ${
             isLeft ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'
           } from-black/35 via-black/10 to-transparent w-10 sm:w-20 pointer-events-none z-10`}
         />
-
-        {/* Subtle top/bottom page edge shadow */}
-        <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/25 to-transparent pointer-events-none z-10" />
-        <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-black/25 to-transparent pointer-events-none z-10" />
       </div>
     );
   };
@@ -124,16 +179,15 @@ export default function ArchiveSection() {
   /**
    * Helper to render packed background pages peeking out from underneath
    */
-  const renderStackedPeekPage = (still: ArchiveStill) => {
+  const renderStackedPeekPage = (item: ArchiveBookItem) => {
     return (
       <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl relative">
         <BlurImage
-          src={still.imageUrl}
-          alt={still.title}
+          src={item.imageUrl}
+          alt={item.title}
           className="w-full h-full object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-black/40" />
-        {/* Layered paper edge highlight */}
         <div className="absolute inset-y-0 right-0 w-1 bg-white/20" />
       </div>
     );
@@ -173,7 +227,7 @@ export default function ArchiveSection() {
                   : 'text-white/50 hover:text-white'
               }`}
             >
-              All Stills
+              All Items
             </button>
             <button
               type="button"
@@ -200,43 +254,63 @@ export default function ArchiveSection() {
           </div>
         </motion.div>
 
-        {/* Gallery Masonry Wall: Images Fill Entire Card, No Years */}
+        {/* Gallery Masonry Wall: Images & Video Fill Entire Card, No Years */}
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 pt-4">
-          {filteredStills.map((still, idx) => {
-            const isTall = still.aspectRatio === 'portrait';
+          {filteredItems.map((item, idx) => {
+            const isTall = item.aspectRatio === 'portrait';
+            const isVideo = item.type === 'video';
+
             return (
               <motion.div
-                key={still.id}
+                key={item.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.6, delay: (idx % 4) * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                onClick={() => openBookLightbox(still)}
-                data-cursor="OPEN BOOK"
+                onClick={() => openBookLightbox(item)}
+                data-cursor={isVideo ? 'PLAY FILM' : 'OPEN BOOK'}
                 className="break-inside-avoid group cursor-pointer relative overflow-hidden bg-black border border-white/10 hover:border-white/30 transition-all duration-300 rounded"
               >
                 <div className={`relative w-full ${isTall ? 'aspect-[3/4]' : 'aspect-[16/10]'}`}>
-                  <BlurImage
-                    src={still.imageUrl}
-                    alt={still.title}
-                    priority={idx < 4}
-                    className="group-hover:brightness-105 group-hover:scale-103 transition-all duration-500 ease-out"
-                  />
+                  {isVideo && item.videoUrl ? (
+                    <div className="relative w-full h-full overflow-hidden bg-black">
+                      <video
+                        src={item.videoUrl}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-liber text-white uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                        <span>Cinema Reel</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <BlurImage
+                      src={item.imageUrl}
+                      alt={item.title}
+                      priority={idx < 4}
+                      className="group-hover:brightness-105 group-hover:scale-103 transition-all duration-500 ease-out"
+                    />
+                  )}
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none" />
                   <div className="absolute inset-0 film-grain pointer-events-none" />
 
-                  {/* Bottom Caption Overlay: Title and Camera (NO year) */}
+                  {/* Bottom Caption Overlay */}
                   <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-end justify-between z-10 pointer-events-none">
                     <div className="space-y-0.5 max-w-[85%]">
                       <span className="text-[10px] font-liber font-medium text-white/60 block">
-                        {still.camera}
+                        {item.camera}
                       </span>
                       <h4 className="font-liber font-bold text-sm sm:text-base text-white truncate">
-                        {still.title}
+                        {item.title}
                       </h4>
                     </div>
                     <div className="p-1.5 rounded-full bg-white/15 text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                      <Maximize2 className="w-3.5 h-3.5" />
+                      {isVideo ? <Play className="w-3.5 h-3.5 fill-current" /> : <Maximize2 className="w-3.5 h-3.5" />}
                     </div>
                   </div>
                 </div>
@@ -247,7 +321,7 @@ export default function ArchiveSection() {
       </div>
 
       {/* 3D BOOK FLIPPING LIGHTBOX MODAL */}
-      {selectedStillIndex !== null && currentStill && (
+      {selectedItemIndex !== null && currentItem && (
         <div
           onClick={(e) => {
             if (e.target === e.currentTarget) closeBookLightbox();
@@ -292,7 +366,7 @@ export default function ArchiveSection() {
                   transformOrigin: 'left center',
                 }}
               >
-                {renderStackedPeekPage(prev2Still)}
+                {renderStackedPeekPage(prev2Item)}
               </div>
 
               <div
@@ -304,7 +378,7 @@ export default function ArchiveSection() {
                   transformOrigin: 'left center',
                 }}
               >
-                {renderStackedPeekPage(prevStill)}
+                {renderStackedPeekPage(prevItem)}
               </div>
 
               {/* 2. RIGHT STACK OF PAGES (Packed underneath on the right in 3D) */}
@@ -317,7 +391,7 @@ export default function ArchiveSection() {
                   transformOrigin: 'right center',
                 }}
               >
-                {renderStackedPeekPage(next2Still)}
+                {renderStackedPeekPage(next2Item)}
               </div>
 
               <div
@@ -329,10 +403,10 @@ export default function ArchiveSection() {
                   transformOrigin: 'right center',
                 }}
               >
-                {renderStackedPeekPage(nextStill)}
+                {renderStackedPeekPage(nextItem)}
               </div>
 
-              {/* 3. PHYSICAL 3D BOOK BODY (With realistic book casing & page block thickness) */}
+              {/* 3. PHYSICAL 3D BOOK BODY (With realistic casing & page block thickness) */}
               <div
                 className="relative w-full h-full rounded-2xl sm:rounded-3xl p-1 sm:p-1.5 bg-gradient-to-b from-[#1c1c20] via-[#111114] to-[#09090b] border border-white/20 shadow-[0_30px_100px_rgba(0,0,0,0.95),0_10px_30px_rgba(0,0,0,0.85)] flex z-30"
                 style={{
@@ -349,30 +423,57 @@ export default function ArchiveSection() {
                     transformStyle: 'preserve-3d',
                   }}
                 >
-                  {/* STATIC BASE LAYER */}
-                  {/* Left Half (Underneath / Static) */}
-                  <div
-                    onClick={handlePrev}
-                    data-cursor="PREV"
-                    className="w-1/2 h-full relative overflow-hidden cursor-pointer"
-                  >
-                    {flipDirection === 'prev'
-                      ? renderHalfImage(prevStill, 'left')
-                      : renderHalfImage(currentStill, 'left', true)}
-                  </div>
+                  {/* WHEN STATIC & ITEM IS VIDEO: ONE SINGLE UNBROKEN FULL VIDEO WITH NO MIDDLE LINE */}
+                  {!isFlipping && currentItem.type === 'video' && currentItem.videoUrl ? (
+                    <div className="absolute inset-0 w-full h-full overflow-hidden select-none z-10">
+                      <video
+                        src={currentItem.videoUrl}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Left and Right click targets to turn pages */}
+                      <div
+                        onClick={handlePrev}
+                        data-cursor="PREV"
+                        className="absolute inset-y-0 left-0 w-1/2 cursor-pointer z-20"
+                      />
+                      <div
+                        onClick={handleNext}
+                        data-cursor="NEXT"
+                        className="absolute inset-y-0 right-0 w-1/2 cursor-pointer z-20"
+                      />
+                    </div>
+                  ) : (
+                    /* STATIC BASE LAYER (When flipping or viewing photos) */
+                    <>
+                      {/* Left Half (Underneath / Static) */}
+                      <div
+                        onClick={handlePrev}
+                        data-cursor="PREV"
+                        className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                      >
+                        {flipDirection === 'prev'
+                          ? renderHalfMedia(prevItem, 'left')
+                          : renderHalfMedia(currentItem, 'left', true)}
+                      </div>
 
-                  {/* Right Half (Underneath / Static: Unfolds as top page turns left) */}
-                  <div
-                    onClick={handleNext}
-                    data-cursor="NEXT"
-                    className="w-1/2 h-full relative overflow-hidden cursor-pointer"
-                  >
-                    {flipDirection === 'next'
-                      ? renderHalfImage(nextStill, 'right')
-                      : renderHalfImage(currentStill, 'right', true)}
-                  </div>
+                      {/* Right Half (Underneath / Static: Unfolds as top page turns left) */}
+                      <div
+                        onClick={handleNext}
+                        data-cursor="NEXT"
+                        className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                      >
+                        {flipDirection === 'next'
+                          ? renderHalfMedia(nextItem, 'right')
+                          : renderHalfMedia(currentItem, 'right', true)}
+                      </div>
+                    </>
+                  )}
 
-                  {/* DYNAMIC 3D TURNING PAGE WITH AUTHENTIC CURL & BEND */}
+                  {/* DYNAMIC FAST 3D TURNING PAGE WITH AUTHENTIC CURL & BEND (0.32s) */}
                   {/* FORWARD FLIP: Right page curls, lifts, and bends across the center spine to the left */}
                   {flipDirection === 'next' && (
                     <motion.div
@@ -383,9 +484,9 @@ export default function ArchiveSection() {
                         rotateZ: [0, 1.8, -1.2, 0],
                       }}
                       transition={{
-                        duration: 0.46,
+                        duration: 0.32,
                         times: [0, 0.4, 0.75, 1],
-                        ease: [0.25, 1, 0.5, 1],
+                        ease: [0.2, 0.9, 0.3, 1],
                       }}
                       onAnimationComplete={onFlipComplete}
                       className="absolute top-0 right-0 w-1/2 h-full z-40"
@@ -402,12 +503,11 @@ export default function ArchiveSection() {
                           WebkitBackfaceVisibility: 'hidden',
                         }}
                       >
-                        {renderHalfImage(currentStill, 'right')}
-                        {/* Dynamic traveling bend highlight & shadow */}
+                        {renderHalfMedia(currentItem, 'right')}
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: [0, 0.85, 0.2] }}
-                          transition={{ duration: 0.23, times: [0, 0.5, 1] }}
+                          transition={{ duration: 0.16, times: [0, 0.5, 1] }}
                           className="absolute inset-0 bg-gradient-to-r from-black/90 via-white/10 to-transparent pointer-events-none"
                         />
                       </div>
@@ -421,19 +521,18 @@ export default function ArchiveSection() {
                           WebkitBackfaceVisibility: 'hidden',
                         }}
                       >
-                        {renderHalfImage(nextStill, 'left')}
-                        {/* Shadow softens as page flattens on the left stack */}
+                        {renderHalfMedia(nextItem, 'left')}
                         <motion.div
                           initial={{ opacity: 0.85 }}
                           animate={{ opacity: 0 }}
-                          transition={{ duration: 0.23, delay: 0.23 }}
+                          transition={{ duration: 0.16, delay: 0.16 }}
                           className="absolute inset-0 bg-gradient-to-l from-black/90 via-black/30 to-transparent pointer-events-none"
                         />
                       </div>
                     </motion.div>
                   )}
 
-                  {/* BACKWARD FLIP: Left page curls, lifts, and bends across the center spine to the right */}
+                  {/* BACKWARD FLIP: Left page curls, lifts, and bends across the center spine to the right (0.32s) */}
                   {flipDirection === 'prev' && (
                     <motion.div
                       initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
@@ -443,9 +542,9 @@ export default function ArchiveSection() {
                         rotateZ: [0, -1.8, 1.2, 0],
                       }}
                       transition={{
-                        duration: 0.46,
+                        duration: 0.32,
                         times: [0, 0.4, 0.75, 1],
-                        ease: [0.25, 1, 0.5, 1],
+                        ease: [0.2, 0.9, 0.3, 1],
                       }}
                       onAnimationComplete={onFlipComplete}
                       className="absolute top-0 left-0 w-1/2 h-full z-40"
@@ -462,11 +561,11 @@ export default function ArchiveSection() {
                           WebkitBackfaceVisibility: 'hidden',
                         }}
                       >
-                        {renderHalfImage(currentStill, 'left')}
+                        {renderHalfMedia(currentItem, 'left')}
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: [0, 0.85, 0.2] }}
-                          transition={{ duration: 0.23, times: [0, 0.5, 1] }}
+                          transition={{ duration: 0.16, times: [0, 0.5, 1] }}
                           className="absolute inset-0 bg-gradient-to-l from-black/90 via-white/10 to-transparent pointer-events-none"
                         />
                       </div>
@@ -480,11 +579,11 @@ export default function ArchiveSection() {
                           WebkitBackfaceVisibility: 'hidden',
                         }}
                       >
-                        {renderHalfImage(prevStill, 'right')}
+                        {renderHalfMedia(prevItem, 'right')}
                         <motion.div
                           initial={{ opacity: 0.85 }}
                           animate={{ opacity: 0 }}
-                          transition={{ duration: 0.23, delay: 0.23 }}
+                          transition={{ duration: 0.16, delay: 0.16 }}
                           className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent pointer-events-none"
                         />
                       </div>
@@ -494,15 +593,15 @@ export default function ArchiveSection() {
                   {/* Description in small words on the left bottom corner with NO background box, highly legible with drop-shadow */}
                   <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-[260px] sm:max-w-xs pointer-events-none text-left space-y-1">
                     <h4 className="font-liber font-bold text-xs sm:text-sm text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                      {currentStill.title}
+                      {currentItem.title}
                     </h4>
                     <p className="text-[10px] sm:text-[11px] text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                      {currentStill.description}
+                      {currentItem.description}
                     </p>
                     <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] text-white/60 font-mono tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                      <span>{currentStill.camera}</span>
+                      <span>{currentItem.camera}</span>
                       <span>·</span>
-                      <span>{currentStill.location}</span>
+                      <span>{currentItem.location}</span>
                     </div>
                   </div>
                 </div>
