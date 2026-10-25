@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { ARCHIVE_STILLS } from '../data/portfolioData';
 import { X, Maximize2, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import BlurImage from './BlurImage';
@@ -19,7 +19,7 @@ interface ArchiveBookItem {
 
 const CINEMA_REEL_ITEM: ArchiveBookItem = {
   id: 'film-villages-reel',
-  title: 'Hidden African Villages: Cinema Reel',
+  title: 'Hidden African Villages',
   location: 'Northern Province & Nyabarongo',
   camera: 'Arri Alexa Mini LF',
   lens: 'Cooke Anamorphic 40mm',
@@ -38,20 +38,11 @@ const ALL_ARCHIVE_ITEMS: ArchiveBookItem[] = [
   })),
 ];
 
-// Fan geometry parameters matching reference video
-// 8 leaves on left and 8 leaves on right
-const FAN_ANGLES = [28, 36, 43, 49, 54, 59, 64, 68];
-const FAN_OFFSETS_DESKTOP = [36, 70, 100, 126, 148, 167, 183, 196]; // px from center edge
-const FAN_OFFSETS_MOBILE = [18, 34, 48, 60]; // px for mobile
-
 export default function ArchiveSection() {
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
   const [activeAspectFilter, setActiveAspectFilter] = useState<'all' | 'portrait' | 'landscape'>('all');
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev' | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-
-  const pendingTurnRef = useRef<'next' | 'prev' | null>(null);
 
   const filteredItems =
     activeAspectFilter === 'all'
@@ -65,7 +56,6 @@ export default function ArchiveSection() {
     setSelectedItemIndex(idx >= 0 ? idx : 0);
     setFlipDirection(null);
     setIsFlipping(false);
-    pendingTurnRef.current = null;
     document.body.style.overflow = 'hidden';
   };
 
@@ -73,7 +63,6 @@ export default function ArchiveSection() {
     setSelectedItemIndex(null);
     setFlipDirection(null);
     setIsFlipping(false);
-    pendingTurnRef.current = null;
     document.body.style.overflow = '';
   };
 
@@ -83,61 +72,34 @@ export default function ArchiveSection() {
 
   const nextIndex = (currentIndex + 1) % totalItems;
   const prevIndex = (currentIndex - 1 + totalItems) % totalItems;
+  const next2Index = (currentIndex + 2) % totalItems;
+  const prev2Index = (currentIndex - 2 + totalItems) % totalItems;
 
   const nextItem = ALL_ARCHIVE_ITEMS[nextIndex];
   const prevItem = ALL_ARCHIVE_ITEMS[prevIndex];
+  const next2Item = ALL_ARCHIVE_ITEMS[next2Index];
+  const prev2Item = ALL_ARCHIVE_ITEMS[prev2Index];
 
-  const handleNext = useCallback(() => {
-    if (selectedItemIndex === null) return;
-    if (isFlipping) {
-      pendingTurnRef.current = 'next';
-      return;
-    }
+  const handleNext = () => {
+    if (isFlipping || selectedItemIndex === null) return;
     setFlipDirection('next');
     setIsFlipping(true);
-  }, [isFlipping, selectedItemIndex]);
+  };
 
-  const handlePrev = useCallback(() => {
-    if (selectedItemIndex === null) return;
-    if (isFlipping) {
-      pendingTurnRef.current = 'prev';
-      return;
-    }
+  const handlePrev = () => {
+    if (isFlipping || selectedItemIndex === null) return;
     setFlipDirection('prev');
     setIsFlipping(true);
-  }, [isFlipping, selectedItemIndex]);
+  };
 
   const onFlipComplete = () => {
-    let newIndex = currentIndex;
     if (flipDirection === 'next') {
-      newIndex = nextIndex;
       setSelectedItemIndex(nextIndex);
     } else if (flipDirection === 'prev') {
-      newIndex = prevIndex;
       setSelectedItemIndex(prevIndex);
     }
     setFlipDirection(null);
     setIsFlipping(false);
-
-    // If rapid turn was queued, trigger it smoothly
-    if (pendingTurnRef.current) {
-      const nextTurn = pendingTurnRef.current;
-      pendingTurnRef.current = null;
-      setTimeout(() => {
-        if (nextTurn === 'next') handleNext();
-        else if (nextTurn === 'prev') handlePrev();
-      }, 30);
-    }
-  };
-
-  // Turn to specific page clicked from fan
-  const turnToPage = (targetIndex: number) => {
-    if (isFlipping || targetIndex === currentIndex) return;
-    if (targetIndex > currentIndex || (currentIndex === totalItems - 1 && targetIndex === 0)) {
-      handleNext();
-    } else {
-      handlePrev();
-    }
   };
 
   // Keyboard navigation when book is open
@@ -152,25 +114,11 @@ export default function ArchiveSection() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedItemIndex, handleNext, handlePrev]);
-
-  // Touch Swipe gesture support
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchEndX - touchStartX;
-    if (diff < -40) handleNext();
-    else if (diff > 40) handlePrev();
-    setTouchStartX(null);
-  };
+  }, [selectedItemIndex, isFlipping, nextIndex, prevIndex]);
 
   /**
-   * Renders half of the continuous image/video so that left & right halves
-   * together seamlessly form ONE single continuous image across both pages with NO middle line.
+   * Renders half of the continuous image/video for the flip animation
+   * when turning across pages.
    */
   const renderHalfMedia = (item: ArchiveBookItem, side: 'left' | 'right', isPriority = false) => {
     const isLeft = side === 'left';
@@ -194,11 +142,10 @@ export default function ArchiveSection() {
             />
           </div>
 
-          {/* Subtle natural spine gradient */}
           <div
             className={`absolute inset-y-0 ${
               isLeft ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'
-            } from-black/25 via-black/5 to-transparent w-8 sm:w-16 pointer-events-none z-10`}
+            } from-black/35 via-black/10 to-transparent w-10 sm:w-20 pointer-events-none z-10`}
           />
         </div>
       );
@@ -220,60 +167,28 @@ export default function ArchiveSection() {
           />
         </div>
 
-        {/* Subtle natural spine gradient */}
         <div
           className={`absolute inset-y-0 ${
             isLeft ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'
-          } from-black/25 via-black/5 to-transparent w-8 sm:w-16 pointer-events-none z-10`}
+          } from-black/35 via-black/10 to-transparent w-10 sm:w-20 pointer-events-none z-10`}
         />
       </div>
     );
   };
 
   /**
-   * Renders a single fanned book leaf for the left or right 3D fan
+   * Helper to render packed background pages peeking out from underneath
    */
-  const renderFannedLeaf = (item: ArchiveBookItem, side: 'left' | 'right', step: number) => {
-    const isLeft = side === 'left';
-    const angleIndex = Math.min(step, FAN_ANGLES.length - 1);
-    const angle = FAN_ANGLES[angleIndex];
-    const rotateY = isLeft ? angle : -angle;
-    const brightness = Math.max(0.6, 1 - step * 0.05);
-    const zIndex = 20 - step;
-
+  const renderStackedPeekPage = (item: ArchiveBookItem) => {
     return (
-      <div
-        key={`${side}-leaf-${step}-${item.id}`}
-        onClick={() => turnToPage(ALL_ARCHIVE_ITEMS.findIndex((it) => it.id === item.id))}
-        className="absolute top-0 w-1/2 h-full cursor-pointer select-none transition-transform duration-500 ease-out hover:brightness-110"
-        style={{
-          [isLeft ? 'left' : 'right']: 0,
-          transformOrigin: isLeft ? 'right center' : 'left center',
-          transform: `translateX(${isLeft ? -FAN_OFFSETS_DESKTOP[angleIndex] : FAN_OFFSETS_DESKTOP[angleIndex]}px) translateZ(${-step * 25}px) rotateY(${rotateY}deg) scale(${1 - step * 0.015})`,
-          zIndex,
-          filter: `brightness(${brightness})`,
-          transformStyle: 'preserve-3d',
-          willChange: 'transform',
-        }}
-      >
-        <div
-          className={`w-full h-full overflow-hidden rounded-[12px] bg-black shadow-2xl relative ${
-            isLeft ? 'border-l border-[#f5efe4]/30' : 'border-r border-[#f5efe4]/30'
-          }`}
-        >
-          <BlurImage
-            src={item.imageUrl}
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-          {/* Paper edge glow */}
-          <div
-            className={`absolute inset-y-0 ${
-              isLeft ? 'left-0' : 'right-0'
-            } w-[2px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none`}
-          />
-        </div>
+      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl relative">
+        <BlurImage
+          src={item.imageUrl}
+          alt={item.title}
+          className="w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-y-0 right-0 w-1 bg-white/20" />
       </div>
     );
   };
@@ -339,7 +254,7 @@ export default function ArchiveSection() {
           </div>
         </motion.div>
 
-        {/* Gallery Masonry Wall */}
+        {/* Gallery Masonry Wall: Images & Video Fill Entire Card, No Years */}
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 pt-4">
           {filteredItems.map((item, idx) => {
             const isTall = item.aspectRatio === 'portrait';
@@ -367,10 +282,6 @@ export default function ArchiveSection() {
                         playsInline
                         className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
                       />
-                      <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-liber text-white uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                        <span>Cinema Reel</span>
-                      </div>
                     </div>
                   ) : (
                     <BlurImage
@@ -405,17 +316,15 @@ export default function ArchiveSection() {
         </div>
       </div>
 
-      {/* 3D FANNED BOOK MODAL (MATCHING REFERENCE VIDEO) */}
+      {/* 3D BOOK FLIPPING LIGHTBOX MODAL */}
       {selectedItemIndex !== null && currentItem && (
         <div
           onClick={(e) => {
             if (e.target === e.currentTarget) closeBookLightbox();
           }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="fixed inset-0 z-50 flex flex-col justify-between items-center bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber p-4 sm:p-8 overflow-hidden select-none"
+          className="fixed inset-0 z-50 flex flex-col justify-between items-center bg-black/95 backdrop-blur-2xl text-white animate-in fade-in duration-300 font-liber p-4 sm:p-8 overflow-y-auto"
         >
-          {/* Top Bar with Close Button */}
+          {/* Top Bar with Navigation and Close */}
           <div className="w-full max-w-5xl flex items-center justify-between pb-3 sm:pb-5 border-b border-white/10 z-50">
             <div className="flex items-center gap-2 text-xs font-liber text-white/50">
               <span className="uppercase tracking-widest text-[10px]">Visual Archive Book</span>
@@ -432,257 +341,270 @@ export default function ArchiveSection() {
             </button>
           </div>
 
-          {/* 1. STAGE: 3D Perspective ~1400px with center origin */}
-          <div className="my-auto w-full flex flex-col items-center py-4 relative">
+          {/* 3D Book Stage Container with Perspective */}
+          <div className="my-auto w-full flex flex-col items-center py-4">
             <div
-              className="relative w-full max-w-5xl h-[340px] sm:h-[460px] md:h-[540px] lg:h-[600px] flex items-center justify-center"
+              className="relative w-full max-w-5xl h-[340px] sm:h-[460px] md:h-[540px] lg:h-[600px] flex items-center justify-center select-none"
               style={{
-                perspective: '1400px',
-                perspectiveOrigin: 'center center',
-                transformStyle: 'preserve-3d',
+                perspective: '2500px',
               }}
             >
-              {/* Soft elliptical blurred shadow on the floor under the book (~35% opacity, blur ~30px) */}
-              <div
-                className="absolute -bottom-10 w-[110%] max-w-5xl h-24 rounded-[100%] bg-black/35 blur-[30px] pointer-events-none transform scale-y-50"
-              />
+              {/* Soft Ambient Floor Shadow beneath the physical book */}
+              <div className="absolute -bottom-10 w-[92%] h-24 bg-black/95 blur-2xl rounded-full pointer-events-none transform scale-y-50" />
 
-              {/* 3. SIDE FANS: ~8 leaves on left and ~8 leaves on right */}
-              {/* LEFT SIDE FAN (Already turned leaves) */}
+              {/* 1. LEFT STACK OF PAGES (Packed underneath on the left in 3D) */}
               <div
-                className="absolute inset-0 pointer-events-auto"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                {Array.from({ length: 8 }).map((_, step) => {
-                  const targetIdx = (currentIndex - (step + 1) + totalItems) % totalItems;
-                  const item = ALL_ARCHIVE_ITEMS[targetIdx];
-                  return renderFannedLeaf(item, 'left', step);
-                })}
-              </div>
-
-              {/* RIGHT SIDE FAN (Not yet turned leaves) */}
-              <div
-                className="absolute inset-0 pointer-events-auto"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                {Array.from({ length: 8 }).map((_, step) => {
-                  const targetIdx = (currentIndex + (step + 1)) % totalItems;
-                  const item = ALL_ARCHIVE_ITEMS[targetIdx];
-                  return renderFannedLeaf(item, 'right', step);
-                })}
-              </div>
-
-              {/* 2. CENTER SPREAD: Two pages side by side facing the viewer */}
-              <div
-                className="relative w-full h-full rounded-[12px] overflow-hidden bg-[#0d0d10] border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex z-30"
+                onClick={handlePrev}
+                title="Previous page"
+                className="absolute left-[-24px] sm:left-[-40px] md:left-[-56px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:-translate-x-2"
                 style={{
-                  transformStyle: 'preserve-3d',
-                  willChange: 'transform',
+                  transform: 'translateZ(-100px) rotateY(16deg) scale(0.93)',
+                  transformOrigin: 'left center',
                 }}
               >
-                {/* Thin cream page-edge visible on outer sides */}
-                <div className="absolute inset-y-0 left-0 w-[2px] bg-[#f4efe6]/25 z-20 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 w-[2px] bg-[#f4efe6]/25 z-20 pointer-events-none" />
+                {renderStackedPeekPage(prev2Item)}
+              </div>
 
-                {/* Subtly bowed spine: faint vertical gradient shadow at center fold */}
-                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 sm:w-16 bg-gradient-to-r from-black/20 via-black/45 to-black/20 z-20 pointer-events-none" />
+              <div
+                onClick={handlePrev}
+                title="Previous page"
+                className="absolute left-[-12px] sm:left-[-20px] md:left-[-28px] w-[90%] h-[96%] top-[2%] cursor-pointer z-20 transition-transform duration-500 hover:-translate-x-1"
+                style={{
+                  transform: 'translateZ(-50px) rotateY(9deg) scale(0.97)',
+                  transformOrigin: 'left center',
+                }}
+              >
+                {renderStackedPeekPage(prevItem)}
+              </div>
 
-                {/* WHEN STATIC & ITEM IS VIDEO: ONE UNBROKEN SINGLE VIDEO ACROSS BOTH PAGES */}
-                {!isFlipping && currentItem.type === 'video' && currentItem.videoUrl ? (
-                  <div className="absolute inset-0 w-full h-full overflow-hidden select-none z-10">
-                    <video
-                      src={currentItem.videoUrl}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Left and Right click targets to turn pages */}
-                    <div
-                      onClick={handlePrev}
-                      data-cursor="PREV"
-                      className="absolute inset-y-0 left-0 w-1/2 cursor-pointer z-20"
-                    />
-                    <div
-                      onClick={handleNext}
-                      data-cursor="NEXT"
-                      className="absolute inset-y-0 right-0 w-1/2 cursor-pointer z-20"
-                    />
-                  </div>
-                ) : (
-                  /* STATIC BASE LAYER (Left page & Right page) */
-                  <>
-                    {/* Left Page: slightly curved toward spine */}
-                    <div
-                      onClick={handlePrev}
-                      data-cursor="PREV"
-                      className="w-1/2 h-full relative overflow-hidden cursor-pointer"
-                      style={{
-                        transform: 'rotateY(2deg)',
-                        transformOrigin: 'right center',
-                      }}
-                    >
-                      {flipDirection === 'prev'
-                        ? renderHalfMedia(prevItem, 'left')
-                        : renderHalfMedia(currentItem, 'left', true)}
+              {/* 2. RIGHT STACK OF PAGES (Packed underneath on the right in 3D) */}
+              <div
+                onClick={handleNext}
+                title="Next page"
+                className="absolute right-[-24px] sm:right-[-40px] md:right-[-56px] w-[82%] h-[92%] top-[4%] cursor-pointer z-10 transition-transform duration-500 hover:translate-x-2"
+                style={{
+                  transform: 'translateZ(-100px) rotateY(-16deg) scale(0.93)',
+                  transformOrigin: 'right center',
+                }}
+              >
+                {renderStackedPeekPage(next2Item)}
+              </div>
+
+              <div
+                onClick={handleNext}
+                title="Next page"
+                className="absolute right-[-12px] sm:right-[-20px] md:right-[-28px] w-[90%] h-[96%] top-[2%] cursor-pointer z-20 transition-transform duration-500 hover:translate-x-1"
+                style={{
+                  transform: 'translateZ(-50px) rotateY(-9deg) scale(0.97)',
+                  transformOrigin: 'right center',
+                }}
+              >
+                {renderStackedPeekPage(nextItem)}
+              </div>
+
+              {/* 3. PHYSICAL 3D BOOK BODY (With realistic casing & page block thickness) */}
+              <div
+                className="relative w-full h-full rounded-2xl sm:rounded-3xl p-1 sm:p-1.5 bg-gradient-to-b from-[#1c1c20] via-[#111114] to-[#09090b] border border-white/20 shadow-[0_30px_100px_rgba(0,0,0,0.95),0_10px_30px_rgba(0,0,0,0.85)] flex z-30"
+                style={{
+                  transformStyle: 'preserve-3d',
+                }}
+              >
+                {/* Authentic bottom page edge block (rim showing paper thickness) */}
+                <div className="absolute -bottom-2.5 inset-x-4 h-2.5 bg-gradient-to-b from-[#1f1f25] to-[#0e0e11] rounded-b border-b border-white/10 shadow-lg pointer-events-none" />
+
+                {/* The Two-Page Open Spread */}
+                <div
+                  className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#0a0a0c] flex"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
+                  {/* WHEN STATIC & ITEM IS VIDEO: ONE SINGLE UNBROKEN FULL VIDEO WITH NO MIDDLE LINE */}
+                  {!isFlipping && currentItem.type === 'video' && currentItem.videoUrl ? (
+                    <div className="absolute inset-0 w-full h-full overflow-hidden select-none z-10">
+                      <video
+                        src={currentItem.videoUrl}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Left and Right click targets to turn pages */}
+                      <div
+                        onClick={handlePrev}
+                        data-cursor="PREV"
+                        className="absolute inset-y-0 left-0 w-1/2 cursor-pointer z-20"
+                      />
+                      <div
+                        onClick={handleNext}
+                        data-cursor="NEXT"
+                        className="absolute inset-y-0 right-0 w-1/2 cursor-pointer z-20"
+                      />
                     </div>
+                  ) : (
+                    /* STATIC BASE LAYER (When flipping or viewing photos) */
+                    <>
+                      {/* Left Half (Underneath / Static) */}
+                      <div
+                        onClick={handlePrev}
+                        data-cursor="PREV"
+                        className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                      >
+                        {flipDirection === 'prev'
+                          ? renderHalfMedia(prevItem, 'left')
+                          : renderHalfMedia(currentItem, 'left', true)}
+                      </div>
 
-                    {/* Right Page: slightly curved toward spine */}
-                    <div
-                      onClick={handleNext}
-                      data-cursor="NEXT"
-                      className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                      {/* Right Half (Underneath / Static: Unfolds as top page turns left) */}
+                      <div
+                        onClick={handleNext}
+                        data-cursor="NEXT"
+                        className="w-1/2 h-full relative overflow-hidden cursor-pointer"
+                      >
+                        {flipDirection === 'next'
+                          ? renderHalfMedia(nextItem, 'right')
+                          : renderHalfMedia(currentItem, 'right', true)}
+                      </div>
+                    </>
+                  )}
+
+                  {/* DYNAMIC FAST 3D TURNING PAGE WITH AUTHENTIC CURL & BEND (0.32s) */}
+                  {/* FORWARD FLIP: Right page curls, lifts, and bends across the center spine to the left */}
+                  {flipDirection === 'next' && (
+                    <motion.div
+                      initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
+                      animate={{
+                        rotateY: [0, -75, -135, -180],
+                        skewY: [0, -4.5, 3.5, 0],
+                        rotateZ: [0, 1.8, -1.2, 0],
+                      }}
+                      transition={{
+                        duration: 0.32,
+                        times: [0, 0.4, 0.75, 1],
+                        ease: [0.2, 0.9, 0.3, 1],
+                      }}
+                      onAnimationComplete={onFlipComplete}
+                      className="absolute top-0 right-0 w-1/2 h-full z-40"
                       style={{
-                        transform: 'rotateY(-2deg)',
                         transformOrigin: 'left center',
+                        transformStyle: 'preserve-3d',
                       }}
                     >
-                      {flipDirection === 'next'
-                        ? renderHalfMedia(nextItem, 'right')
-                        : renderHalfMedia(currentItem, 'right', true)}
-                    </div>
-                  </>
-                )}
+                      {/* Front Face: Current image right half, curving across to left */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfMedia(currentItem, 'right')}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.85, 0.2] }}
+                          transition={{ duration: 0.16, times: [0, 0.5, 1] }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/90 via-white/10 to-transparent pointer-events-none"
+                        />
+                      </div>
 
-                {/* 4. PAGE-TURN ANIMATION: 600ms, cubic-bezier(0.45, 0.05, 0.25, 1) */}
-                {/* FORWARD TURN: Right page lifts from spine and rotates around spine (Y axis, origin at spine) to -180 deg */}
-                {flipDirection === 'next' && (
-                  <motion.div
-                    initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
-                    animate={{
-                      rotateY: [0, -70, -135, -180],
-                      skewY: [0, -3.5, 2.5, 0],
-                      rotateZ: [0, 1.2, -0.8, 0],
-                    }}
-                    transition={{
-                      duration: 0.6,
-                      times: [0, 0.38, 0.72, 1],
-                      ease: [0.45, 0.05, 0.25, 1],
-                    }}
-                    onAnimationComplete={onFlipComplete}
-                    className="absolute top-0 right-0 w-1/2 h-full z-40"
-                    style={{
-                      transformOrigin: 'left center',
-                      transformStyle: 'preserve-3d',
-                      willChange: 'transform',
-                    }}
-                  >
-                    {/* Front Face: Current image right half, curving across to left */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                      {/* Back Face: Incoming next image left half, unfolding onto left page */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfMedia(nextItem, 'left')}
+                        <motion.div
+                          initial={{ opacity: 0.85 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ duration: 0.16, delay: 0.16 }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/90 via-black/30 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* BACKWARD FLIP: Left page curls, lifts, and bends across the center spine to the right (0.32s) */}
+                  {flipDirection === 'prev' && (
+                    <motion.div
+                      initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
+                      animate={{
+                        rotateY: [0, 75, 135, 180],
+                        skewY: [0, 4.5, -3.5, 0],
+                        rotateZ: [0, -1.8, 1.2, 0],
+                      }}
+                      transition={{
+                        duration: 0.32,
+                        times: [0, 0.4, 0.75, 1],
+                        ease: [0.2, 0.9, 0.3, 1],
+                      }}
+                      onAnimationComplete={onFlipComplete}
+                      className="absolute top-0 left-0 w-1/2 h-full z-40"
                       style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
+                        transformOrigin: 'right center',
+                        transformStyle: 'preserve-3d',
                       }}
                     >
-                      {renderHalfMedia(currentItem, 'right')}
-                      {/* Moving gradient shadow on turning leaf, darkest at midpoint */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 0.8, 0.15] }}
-                        transition={{ duration: 0.3, times: [0, 0.5, 1] }}
-                        className="absolute inset-0 bg-gradient-to-r from-black/90 via-white/10 to-transparent pointer-events-none"
-                      />
-                    </div>
+                      {/* Front Face: Current image left half, curving across to right */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfMedia(currentItem, 'left')}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.85, 0.2] }}
+                          transition={{ duration: 0.16, times: [0, 0.5, 1] }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/90 via-white/10 to-transparent pointer-events-none"
+                        />
+                      </div>
 
-                    {/* Back Face: Incoming next left page */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
-                      style={{
-                        transform: 'rotateY(180deg)',
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {renderHalfMedia(nextItem, 'left')}
-                      <motion.div
-                        initial={{ opacity: 0.8 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.3, delay: 0.3 }}
-                        className="absolute inset-0 bg-gradient-to-l from-black/90 via-black/30 to-transparent pointer-events-none"
-                      />
-                    </div>
-                  </motion.div>
-                )}
+                      {/* Back Face: Incoming prev image right half, unfolding onto right page */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
+                        style={{
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {renderHalfMedia(prevItem, 'right')}
+                        <motion.div
+                          initial={{ opacity: 0.85 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ duration: 0.16, delay: 0.16 }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
 
-                {/* BACKWARD TURN: Left page lifts from spine and rotates around spine (Y axis, origin at spine) to +180 deg */}
-                {flipDirection === 'prev' && (
-                  <motion.div
-                    initial={{ rotateY: 0, skewY: 0, rotateZ: 0 }}
-                    animate={{
-                      rotateY: [0, 70, 135, 180],
-                      skewY: [0, 3.5, -2.5, 0],
-                      rotateZ: [0, -1.2, 0.8, 0],
-                    }}
-                    transition={{
-                      duration: 0.6,
-                      times: [0, 0.38, 0.72, 1],
-                      ease: [0.45, 0.05, 0.25, 1],
-                    }}
-                    onAnimationComplete={onFlipComplete}
-                    className="absolute top-0 left-0 w-1/2 h-full z-40"
-                    style={{
-                      transformOrigin: 'right center',
-                      transformStyle: 'preserve-3d',
-                      willChange: 'transform',
-                    }}
-                  >
-                    {/* Front Face: Current image left half, curving across to right */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {renderHalfMedia(currentItem, 'left')}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 0.8, 0.15] }}
-                        transition={{ duration: 0.3, times: [0, 0.5, 1] }}
-                        className="absolute inset-0 bg-gradient-to-l from-black/90 via-white/10 to-transparent pointer-events-none"
-                      />
+                  {/* Description in small words on the left bottom corner with NO background box, highly legible with drop-shadow */}
+                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-[260px] sm:max-w-xs pointer-events-none text-left space-y-1">
+                    <h4 className="font-liber font-bold text-xs sm:text-sm text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      {currentItem.title}
+                    </h4>
+                    <p className="text-[10px] sm:text-[11px] text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      {currentItem.description}
+                    </p>
+                    <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] text-white/60 font-mono tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                      <span>{currentItem.camera}</span>
+                      <span>·</span>
+                      <span>{currentItem.location}</span>
                     </div>
-
-                    {/* Back Face: Incoming prev right page */}
-                    <div
-                      className="absolute inset-0 w-full h-full overflow-hidden backface-hidden"
-                      style={{
-                        transform: 'rotateY(180deg)',
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                    >
-                      {renderHalfMedia(prevItem, 'right')}
-                      <motion.div
-                        initial={{ opacity: 0.8 }}
-                        animate={{ opacity: 0 }}
-                        transition={{ duration: 0.3, delay: 0.3 }}
-                        className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent pointer-events-none"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Description written down in small words on the left bottom corner with NO background box */}
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 max-w-[260px] sm:max-w-xs pointer-events-none text-left space-y-1">
-                  <h4 className="font-liber font-bold text-xs sm:text-sm text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                    {currentItem.title}
-                  </h4>
-                  <p className="text-[10px] sm:text-[11px] text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                    {currentItem.description}
-                  </p>
-                  <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] text-white/60 font-mono tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                    <span>{currentItem.camera}</span>
-                    <span>·</span>
-                    <span>{currentItem.location}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Existing Controls (Arrow buttons) */}
+            {/* Minimalist Page Turning Controls */}
             <div className="mt-8 z-30 flex items-center justify-center">
               <div className="flex items-center gap-4 px-5 py-2 rounded-full bg-[#111113]/90 backdrop-blur-xl border border-white/15 shadow-2xl text-white">
                 <button
