@@ -137,7 +137,7 @@ export default function ArchiveSection() {
               muted
               loop
               playsInline
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -162,7 +162,7 @@ export default function ArchiveSection() {
             src={item.imageUrl}
             alt={item.title}
             priority={isPriority}
-            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -180,13 +180,13 @@ export default function ArchiveSection() {
    */
   const renderStackedPeekPage = (item: ArchiveBookItem) => {
     return (
-      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-xl relative group">
+      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-xl relative">
         <BlurImage
           src={item.imageUrl}
           alt={item.title}
-          className="w-full h-full object-cover opacity-65 grayscale group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-500"
+          className="w-full h-full object-cover opacity-65"
         />
-        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors pointer-events-none" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
     );
   };
@@ -413,7 +413,7 @@ export default function ArchiveSection() {
                       muted
                       loop
                       playsInline
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
+                      className="w-full h-full object-cover"
                     />
                     {/* Left and Right click targets to turn pages */}
                     <div
