@@ -101,7 +101,7 @@ export default function ProjectModal({
         {/* Scrollable Gallery Content */}
         <div className="overflow-y-auto flex-1 p-6 md:p-8 space-y-6">
           {/* Main Visual Stage with Blur Load */}
-          <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-white/10">
+          <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-white/10 group">
             {project.videoUrl && activeMediaUrl === project.imageUrl ? (
               <video
                 src={project.videoUrl}
@@ -110,13 +110,14 @@ export default function ProjectModal({
                 loop
                 playsInline
                 poster={project.imageUrl}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
               />
             ) : (
               <BlurImage
                 src={activeMediaUrl || project.imageUrl}
                 alt={project.title}
                 priority={true}
+                className="grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
               />
             )}
             <div className="absolute inset-0 film-grain pointer-events-none" />
@@ -133,13 +134,17 @@ export default function ProjectModal({
                 <button
                   type="button"
                   onClick={() => setActiveMediaUrl(project.imageUrl)}
-                  className={`w-24 aspect-[16/10] rounded overflow-hidden border shrink-0 transition-all ${
+                  className={`w-24 aspect-[16/10] rounded overflow-hidden border shrink-0 transition-all group ${
                     activeMediaUrl === project.imageUrl
                       ? 'border-white ring-1 ring-white'
                       : 'border-white/20 opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <BlurImage src={project.imageUrl} alt="Main still" />
+                  <BlurImage
+                    src={project.imageUrl}
+                    alt="Main still"
+                    className="grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
                 </button>
 
                 {/* Additional gallery stills */}
@@ -151,13 +156,17 @@ export default function ProjectModal({
                       key={idx}
                       type="button"
                       onClick={() => setActiveMediaUrl(imgUrl)}
-                      className={`w-24 aspect-[16/10] rounded overflow-hidden border shrink-0 transition-all ${
+                      className={`w-24 aspect-[16/10] rounded overflow-hidden border shrink-0 transition-all group ${
                         isCurrent
                           ? 'border-white ring-1 ring-white'
                           : 'border-white/20 opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <BlurImage src={imgUrl} alt={img.title} />
+                      <BlurImage
+                        src={imgUrl}
+                        alt={img.title}
+                        className="grayscale group-hover:grayscale-0 transition-all duration-300"
+                      />
                     </button>
                   );
                 })}
@@ -181,13 +190,6 @@ export default function ProjectModal({
                 <span className="text-white/40 uppercase text-[10px] block">Client / Context</span>
                 <span className="text-white">{project.client}</span>
               </div>
-
-              {project.camera && (
-                <div className="space-y-1">
-                  <span className="text-white/40 uppercase text-[10px] block">Camera / Glass</span>
-                  <span className="text-white/80">{project.camera}</span>
-                </div>
-              )}
 
               {project.credits && project.credits.length > 0 && (
                 <div className="space-y-1">

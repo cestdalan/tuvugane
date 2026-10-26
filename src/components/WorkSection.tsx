@@ -40,7 +40,7 @@ function SquareMosaicCard({
         src={project.imageUrl}
         alt={project.title}
         priority={isLarge}
-        className="w-full h-full object-cover group-hover:scale-105 group-hover:brightness-105 transition-all duration-700 ease-out"
+        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 group-hover:brightness-105 transition-all duration-700 ease-out"
       />
 
       <div className="absolute inset-0 film-grain pointer-events-none" />
@@ -104,7 +104,7 @@ function MobileWorkCard({
         src={project.imageUrl}
         alt={project.title}
         priority={false}
-        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-103 transition-all duration-700 ease-out"
       />
 
       <div className="absolute inset-0 film-grain pointer-events-none" />
@@ -160,7 +160,7 @@ function EditorialFeedCard({
         <BlurImage
           src={project.imageUrl}
           alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-102 transition-all duration-700"
         />
         <div className="absolute inset-0 film-grain pointer-events-none" />
       </div>
@@ -180,13 +180,6 @@ function EditorialFeedCard({
           </p>
         </div>
 
-        {project.camera && (
-          <div className="text-xs font-liber text-white/40">
-            <span className="block text-white/20 uppercase tracking-widest text-[10px]">Capture</span>
-            <span>{project.camera}</span>
-          </div>
-        )}
-
         {project.galleryImages && project.galleryImages.length > 1 && (
           <div className="pt-2">
             <span className="text-[10px] font-liber text-white/40 uppercase tracking-wider block mb-2">
@@ -201,7 +194,7 @@ function EditorialFeedCard({
                   <BlurImage
                     src={img.imageUrl || project.imageUrl}
                     alt={img.title}
-                    className="filter brightness-75 hover:brightness-100 transition-all"
+                    className="filter grayscale hover:grayscale-0 brightness-75 hover:brightness-100 transition-all duration-300"
                   />
                 </div>
               ))}
@@ -474,6 +467,7 @@ export default function WorkSection({ projects, onSelectProject }: WorkSectionPr
               <BlurImage
                 src={hoveredProject.imageUrl}
                 alt={hoveredProject.title}
+                className="grayscale hover:grayscale-0 transition-all duration-500"
               />
             </motion.div>
           )}

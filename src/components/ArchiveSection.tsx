@@ -137,7 +137,7 @@ export default function ArchiveSection() {
               muted
               loop
               playsInline
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
             />
           </div>
 
@@ -162,7 +162,7 @@ export default function ArchiveSection() {
             src={item.imageUrl}
             alt={item.title}
             priority={isPriority}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
           />
         </div>
 
@@ -180,13 +180,13 @@ export default function ArchiveSection() {
    */
   const renderStackedPeekPage = (item: ArchiveBookItem) => {
     return (
-      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-xl relative">
+      <div className="w-full h-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-xl relative group">
         <BlurImage
           src={item.imageUrl}
           alt={item.title}
-          className="w-full h-full object-cover opacity-65"
+          className="w-full h-full object-cover opacity-65 grayscale group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-500"
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors pointer-events-none" />
       </div>
     );
   };
@@ -278,7 +278,7 @@ export default function ArchiveSection() {
                         muted
                         loop
                         playsInline
-                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-103 transition-all duration-700 ease-out"
                       />
                     </div>
                   ) : (
@@ -286,7 +286,7 @@ export default function ArchiveSection() {
                       src={item.imageUrl}
                       alt={item.title}
                       priority={idx < 4}
-                      className="group-hover:brightness-105 group-hover:scale-103 transition-all duration-500 ease-out"
+                      className="grayscale group-hover:grayscale-0 group-hover:brightness-105 group-hover:scale-103 transition-all duration-700 ease-out"
                     />
                   )}
 
@@ -296,9 +296,6 @@ export default function ArchiveSection() {
                   {/* Bottom Caption Overlay */}
                   <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-end justify-between z-10 pointer-events-none">
                     <div className="space-y-0.5 max-w-[85%]">
-                      <span className="text-[10px] font-liber font-medium text-white/60 block">
-                        {item.camera}
-                      </span>
                       <h4 className="font-liber font-bold text-sm sm:text-base text-white truncate">
                         {item.title}
                       </h4>
@@ -416,7 +413,7 @@ export default function ArchiveSection() {
                       muted
                       loop
                       playsInline
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out"
                     />
                     {/* Left and Right click targets to turn pages */}
                     <div
@@ -572,11 +569,6 @@ export default function ArchiveSection() {
                   <p className="text-[10px] sm:text-[11px] text-white/85 font-light leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
                     {currentItem.description}
                   </p>
-                  <div className="pt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] text-white/60 font-mono tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                    <span>{currentItem.camera}</span>
-                    <span>·</span>
-                    <span>{currentItem.location}</span>
-                  </div>
                 </div>
               </div>
             </div>

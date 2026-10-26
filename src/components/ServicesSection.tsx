@@ -80,7 +80,7 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
 
           {/* Right Column: Visual Preview Card with Skeleton Blur Load */}
           <div className="lg:col-span-5 relative">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-black border border-white/15 shadow-2xl">
+            <div className="group relative aspect-[4/3] rounded-lg overflow-hidden bg-black border border-white/15 shadow-2xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService.id}
@@ -94,6 +94,7 @@ export default function ServicesSection({ onSelectServiceForInquiry }: ServicesS
                     <BlurImage
                       src={activeService.imageUrl}
                       alt={activeService.title}
+                      className="grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
